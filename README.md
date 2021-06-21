@@ -13,7 +13,7 @@ Sign up for the project with your kaggle account. Once every one of us has an ac
 
 ### Environment setup
 Create a python environment wiih:  
-`python -m venv cil_venv`
+`python -m venv cil_venv` or `python3 -m venv cil_venv`
 
 To activate the environment:  
 `source cil_venv/bin/activate`
@@ -22,7 +22,7 @@ To install all "necessary" things do (while inside the cil\_venv):
 `pip install -r requirements.txt`
 
 Then you can execute the test-notebook:  
-`jupyter-notebook kaggle-intro.ipynb`
+`jupyter-notebook kaggle_intro.ipynb`
 
 
 ### Adding packages
