@@ -1,2 +1,5 @@
+cil_data/test_images
+cil_data/training
+cil-road-segmentation-2021.zip
 .ipynb_*
 JONASNOTES.md
