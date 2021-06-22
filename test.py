@@ -4,10 +4,10 @@ import kaggle
 # all code files used are stored in a tools folder
 # this allows us to directly import those files
 import sys
+sys.path.append("cil_data")
+sys.path.append("models")
 sys.path.append("tools")
 
-# imports from tools folder
-import path
+import data
 
-print(path.path_training_images)
-
+dataset = data.RoadSegmentationDataset()
