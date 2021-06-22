@@ -5,5 +5,7 @@ cil_data/sample_submission.csv
 cil-road-segmentation-2021.zip
 
 .ipynb_*
+__pycache__
+tools/__pycache__
 
 JONASNOTES.md
