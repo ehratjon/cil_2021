@@ -1,6 +1,5 @@
 import os
 
-import pandas as pd
 from skimage import io
 
 import torch
