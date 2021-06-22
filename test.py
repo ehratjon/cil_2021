@@ -9,4 +9,5 @@ sys.path.append("tools")
 # imports from tools folder
 import path
 
+print(path.path_training_images)
 

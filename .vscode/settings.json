@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "/home/jpassweg/cil_venv/bin/python3"
+    "python.pythonPath": "/home/jpassweg/cil_venv/bin/python3",
+    "python.analysis.extraPaths": ["tools", "cil_data", "models"]
 }
