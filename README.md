@@ -24,6 +24,10 @@ To install all "necessary" things do (while inside the cil\_venv):
 Then you can execute the test-notebook:  
 `jupyter-notebook kaggle_intro.ipynb`
 
+If you don't want to work with notebooks use the file:
+`test.py`
+
+Put all other code files in the `tools` folder.
 
 ### Adding packages
 If you install new packages with pip, add them to the requirements.txt:  
