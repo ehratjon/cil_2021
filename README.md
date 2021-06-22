@@ -27,10 +27,14 @@ Then you can execute the test-notebook:
 If you don't want to work with notebooks use the file:  
 `test.py`
 
+### Environment structure
 All notebooks are in the main folder. All code files (but `test.py`) are in either:  
 - the `cil_data` folder if they directly manipulate data
 - the `models` folder if they represent an ml model
 - the `tools` folder if none of the above apply 
+
+All sources used to write the code can be collected in:  
+`SOURCES.md`
 
 ### Adding packages
 If you install new packages with pip, add them to the requirements.txt:  
