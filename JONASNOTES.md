@@ -76,6 +76,7 @@
 - Road segmentation project: https://docs.google.com/document/d/1HDgadE9_5mBJTQGHFZScMYSvLENh-RcR-HWFobdra3I/edit
 - kaggle: https://www.kaggle.com/c/cil-road-segmentation-2021
 - kaggle join link: https://www.kaggle.com/t/c5b92ef46fff4ec7b67f619c8e21d1bd
+- repository: https://github.com/ehratjon/cil_2021
 
 ## Code
 
