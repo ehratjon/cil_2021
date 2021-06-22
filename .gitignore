@@ -8,5 +8,7 @@ cil-road-segmentation-2021.zip
 .vscode
 __pycache__
 tools/__pycache__
+models/__pycache__
+cil_data/__pycache__
 
 JONASNOTES.md
