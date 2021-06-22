@@ -24,7 +24,7 @@ To install all "necessary" things do (while inside the cil\_venv):
 Then you can execute the test-notebook:  
 `jupyter-notebook kaggle_intro.ipynb`
 
-If you don't want to work with notebooks use the file:
+If you don't want to work with notebooks use the file:  
 `test.py`
 
 Put all other code files in the `tools` folder.
