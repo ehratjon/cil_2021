@@ -31,6 +31,10 @@
     - ~~push everything then delte .vscode folder locally~~
     - ~~how to handle that training images = 400x400pixels and test images = 600x6000?~~
     - ~~no rescaling -> this might result in unwated artifacts...~~
+    - implement transformers as in: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
+    - additionally go through these links to have a full data loader finished
+      - https://pytorch.org/tutorials/recipes/recipes/custom_dataset_transforms_loader.html
+      - https://pytorch.org/tutorials/beginner/basics/data_tutorial.html
   - write model training
   - first research: What do you need to make a first submission (do while coding)
   - Make a notebook that loads,trains,tests and submits code
