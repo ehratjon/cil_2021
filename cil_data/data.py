@@ -30,7 +30,26 @@ dataset = data.RoadSegmentationTestDataset()
 image = dataset[10]["image"]
 
 Transformed datasets can be accessed like this:
-#TODO
+from torchvision import transforms
+composed = transforms.Compose([data.Rescale((256,256)), data.RandomCrop(224)])
+dataset = data.RoadSegmentationTestDataset(transform=composed)
+# You can also use transforms from torchvision like this:
+data_transform = transforms.Compose([
+        transforms.RandomSizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225])
+    ])
+dataset = data.RoadSegmentationTestDataset(transform=data_transform)
+
+Use our dataset with a dataloader from torch:
+from torch.utils.data import DataLoader
+dataloader = DataLoader(transformed_dataset, batch_size=4,
+                        shuffle=True, num_workers=0)
+for sample_number, sample_batched in enumerate(dataloader):
+    # do something
+
 
 Note:
 If the file is run without the cil_data folder being in the same directory, 
@@ -141,7 +160,7 @@ class Downscale(object):
     Uses skimage.resize
 
     Args:
-        output_size (tuple (Height, Width)): Desired output size.
+        output_size (tuple): Desired output size: (Height, Width).
         anti_aliasing: set to False to alias ("=" remove blur)
     """
     def __init__(self, output_size, anti_aliasing=False):
@@ -170,12 +189,22 @@ class Rescale(object):
     Uses cv2.resize which can both up- and downscale
 
     Args:
-        output_size (tuple): Desired output size: (Height, Width). If tuple, output is
-            matched to output_size.
+        output_size (tuple): Desired output size: (Height, Width).
+        interpolation: how the data should be interpolated
+        
+        possible options for interpolation:
+        INTER_NEAREST – a nearest-neighbor interpolation
+        INTER_LINEAR – a bilinear interpolation (used by default)
+        INTER_AREA – resampling using pixel area relation. It may be a preferred method 
+        for image decimation, as it gives moire’-free results. But when the image is 
+        zoomed, it is similar to theINTER_NEAREST method.
+        INTER_CUBIC – a bicubic interpolation over 4×4 pixel neighborhood
+        INTER_LANCZOS4 – a Lanczos interpolation over 8×8 pixel neighborhood
     """
-    def __init__(self, output_size):
+    def __init__(self, output_size, interpolation=cv2.INTER_CUBIC):
         # open cv uses BGR instead of RGB and we therefore need to reverse width and height
         self.output_size = tuple(reversed(output_size))
+        self.interpolation = interpolation
 
     def __call__(self, sample):
         image, ground_truth = sample['image'], sample['ground_truth']
@@ -183,13 +212,13 @@ class Rescale(object):
         # convert to open cv image, resize, and back
         # RGB (skimage) vs. BGR (opencv)
         cv_image = img_as_ubyte(image)
-        new_cv_image = cv2.resize(cv_image, self.output_size, interpolation = cv2.INTER_AREA)
+        new_cv_image = cv2.resize(cv_image, self.output_size, interpolation = self.interpolation)
         new_image = img_as_float(new_cv_image)
 
         # same for ground truth 
         if(ground_truth):
             cv_ground_truth = img_as_ubyte(ground_truth)
-            new_cv_ground_truth = cv2.resize(cv_ground_truth, self.output_size, interpolation = cv2.INTER_AREA)
+            new_cv_ground_truth = cv2.resize(cv_ground_truth, self.output_size, interpolation = self.interpolation)
             new_ground_truth = img_as_float(new_cv_ground_truth)
         else:
             new_ground_truth = None
@@ -202,8 +231,8 @@ class RandomCrop(object):
     Crop randomly the image in a sample.
 
     Args:
-        output_size (tuple or int): Desired output size. If int, square crop
-            is made.
+        output_size (tuple or int): Desired output size: (Height, Width). 
+            If int, square crop is made.
     """
     def __init__(self, output_size):
         if isinstance(output_size, int):
