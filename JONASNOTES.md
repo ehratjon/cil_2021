@@ -31,10 +31,16 @@
     - ~~push everything then delte .vscode folder locally~~
     - ~~how to handle that training images = 400x400pixels and test images = 600x6000?~~
     - ~~no rescaling -> this might result in unwated artifacts...~~
-    - implement transformers as in: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html
-    - additionally go through these links to have a full data loader finished
-      - https://pytorch.org/tutorials/recipes/recipes/custom_dataset_transforms_loader.html
-      - https://pytorch.org/tutorials/beginner/basics/data_tutorial.html
+    - ~~implement test dataset~~
+    - ~~implement transformers as in: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html~~
+    - ~~make sure all transformers also work if groundtruth is none!~~
+    - ~~additionally go through these links to have a full data loader finished~~
+      - ~~https://pytorch.org/tutorials/recipes/recipes/custom_dataset_transforms_loader.html~~
+      - ~~https://pytorch.org/tutorials/beginner/basics/data_tutorial.html~~
+    - ~~implement flip~~
+  - test data loader
+    - ~~maybe rescale needs real images instead of numpy images~~
+    - ~~(https://stackoverflow.com/questions/26681756/how-to-convert-a-python-numpy-array-to-an-rgb-image-with-opencv-2-4)~~
   - write model training
   - first research: What do you need to make a first submission (do while coding)
   - Make a notebook that loads,trains,tests and submits code
@@ -56,6 +62,10 @@
 - Find novel solution
   - debug
   - optimise to data 
+  - how to handle that training images = 400x400pixels and test images = 600x6000?
+  - find other data augmentations than flip etc. 
+    - look at skimage.transform.___ might have some interesting warps etc.
+    - look at https://www.analyticsvidhya.com/blog/2019/09/9-powerful-tricks-for-working-image-data-skimage-python/
 - Find baselines
   - You must compare your solution to at least two baseline algorithms. For the baselines, you can use the implementations you developed as part of the programming exercises or come up with your own relevant baselines.
 - Improve novel solution
