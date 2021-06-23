@@ -37,6 +37,7 @@ nest-asyncio==1.5.1
 networkx==2.5.1
 notebook==6.3.0
 numpy==1.20.2
+opencv-python==4.5.2.54
 packaging==20.9
 pandas==1.2.5
 pandocfilters==1.4.3
