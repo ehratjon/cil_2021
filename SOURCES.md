@@ -1,1 +1,2 @@
 https://pytorch.org/tutorials/beginner/data_loading_tutorial.html for cil_data/data.py
+https://scikit-image.org/docs/stable/user_guide/data_types.html#working-with-opencv for converting between cv and skimage
