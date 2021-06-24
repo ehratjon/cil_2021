@@ -78,7 +78,7 @@ class RoadSegmentationDataset(Dataset):
         return len(os.listdir(self.path_training_images))
 
     """
-    First available item has id 1
+    First available item has id 0 (this is necessary for the dataloader to work)
     Return: sample = {'image': image, 'ground_truth': ground_truth}
     """
     def __getitem__(self, idx):
@@ -89,9 +89,9 @@ class RoadSegmentationDataset(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        # Since all ids in the folder are consectuive, we can just grab the image with id idx.
-        image_name        = os.path.join(self.path_training_images, "satImage_" + '%03d' % idx + ".png")
-        ground_truth_name = os.path.join(self.path_training_groundtruth, "satImage_" + '%03d' % idx + ".png")
+        # Since all ids in the folder are consectuive, we can just grab the image with id idx+1.
+        image_name        = os.path.join(self.path_training_images, "satImage_" + '%03d' % (idx+1) + ".png")
+        ground_truth_name = os.path.join(self.path_training_groundtruth, "satImage_" + '%03d' % (idx+1) + ".png")
         
         image = io.imread(image_name)
         ground_truth = io.imread(ground_truth_name)
@@ -125,7 +125,7 @@ class RoadSegmentationTestDataset(Dataset):
         return len(os.listdir(self.path_test_images))
 
     """
-    First available item has id 1
+    First available item has id 0
     Return: sample = {'image': image, 'ground_truth': None}
     """
     def __getitem__(self, idx):
@@ -138,11 +138,10 @@ class RoadSegmentationTestDataset(Dataset):
 
         """
         Here we need to do something a bit different since not all ids are present
-        in the folder. We list all files and take the image with idx-1 out (as the 
-        first element has id 1 but is indexed with 0).
+        in the folder. We list all files and take the image with index idx out.
         """
         image_paths = os.listdir(self.path_test_images)
-        image_name = image_paths[idx-1]
+        image_name = image_paths[idx]
         
         image = io.imread(image_name)
 
