@@ -10,3 +10,5 @@ __pycache__
 tools/__pycache__
 models/__pycache__
 cil_data/__pycache__
+
+CIL_Diagram.png
