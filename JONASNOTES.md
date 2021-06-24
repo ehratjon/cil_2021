@@ -43,6 +43,8 @@
     - ~~(https://stackoverflow.com/questions/26681756/how-to-convert-a-python-numpy-array-to-an-rgb-image-with-opencv-2-4)~~
   - write model training
     - read through https://pytorch.org/tutorials/beginner/basics/intro.html
+    - how to split data into train/eval for neural network with dataloader
+    - does this all really work???????????????????????????
     - write model that always guesses black
     - write model with one node or so
     - choose a good simplest model for first baseline
@@ -84,7 +86,14 @@
 ## Pipeline
 
 ### Ideas
-- ?
+- how to handle that training images = 400x400pixels and test images = 608x608?
+  - use window size of 16x16 pixels (like the patches)
+    - postprocessing is needed
+    - first neural network that computes to many roads on each patch
+    - postprocessing removes all roads that do not align over different patches
+  - use window size of 400x400 pixels
+    - no postprocessing for training
+    - take best of 4 for test images
 
 ## Sources
 

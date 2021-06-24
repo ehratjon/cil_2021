@@ -18,3 +18,9 @@ import simple_models
 # check if cuda available
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print('Using {} device'.format(device))
+
+# specify dataset
+dataset = data.RoadSegmentationDataset()
+
+print(dataset[1]["image"].shape)
+print(dataset[1]["ground_truth"].shape)
