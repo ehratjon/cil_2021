@@ -29,7 +29,7 @@
   - write data loader
     - ~~install pytorch, pandas, sckit_image and pip freeze those~~
     - ~~push everything then delte .vscode folder locally~~
-    - ~~how to handle that training images = 400x400pixels and test images = 600x6000?~~
+    - ~~how to handle that training images = 400x400pixels and test images = 608x608?~~
     - ~~no rescaling -> this might result in unwated artifacts...~~
     - ~~implement test dataset~~
     - ~~implement transformers as in: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html~~
@@ -38,10 +38,15 @@
       - ~~https://pytorch.org/tutorials/recipes/recipes/custom_dataset_transforms_loader.html~~
       - ~~https://pytorch.org/tutorials/beginner/basics/data_tutorial.html~~
     - ~~implement flip~~
-  - test data loader
+  - ~~test data loader~~
     - ~~maybe rescale needs real images instead of numpy images~~
     - ~~(https://stackoverflow.com/questions/26681756/how-to-convert-a-python-numpy-array-to-an-rgb-image-with-opencv-2-4)~~
   - write model training
+    - read through https://pytorch.org/tutorials/beginner/basics/intro.html
+    - write model that always guesses black
+    - write model with one node or so
+    - choose a good simplest model for first baseline
+    - explain why this model
   - first research: What do you need to make a first submission (do while coding)
   - Make a notebook that loads,trains,tests and submits code
   - "implement baseline"
@@ -62,7 +67,8 @@
 - Find novel solution
   - debug
   - optimise to data 
-  - how to handle that training images = 400x400pixels and test images = 600x6000?
+  - how to handle that training images = 400x400pixels and test images = 608x608?
+    - find out: looks like houses in training set are a bit larger than in the testing set, but could be also same size
   - find other data augmentations than flip etc. 
     - look at skimage.transform.___ might have some interesting warps etc.
     - look at https://www.analyticsvidhya.com/blog/2019/09/9-powerful-tricks-for-working-image-data-skimage-python/
@@ -70,6 +76,7 @@
   - You must compare your solution to at least two baseline algorithms. For the baselines, you can use the implementations you developed as part of the programming exercises or come up with your own relevant baselines.
 - Improve novel solution
   - read https://docs.google.com/document/d/1T5EjTYempPQng1BecGolbLtN5LtCL_xwq2PmmM-mAJ0/edit again to see what might be missing
+  - use pytorch lightning instead of pytorch
 - Write report
   - see https://docs.google.com/document/d/1T5EjTYempPQng1BecGolbLtN5LtCL_xwq2PmmM-mAJ0/edit to get an overview of what it needs to include
   - additionally, it says in the file above we should receive a pdf on how to write papers
