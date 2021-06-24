@@ -9,4 +9,4 @@ class ZeroModel(nn.Module):
 
     # defines forward pass (never call yourself)
     def forward(self, x):
-        return torch.zeros_like(x)
+        return torch.zeros_like(x, requires_grad=False)
