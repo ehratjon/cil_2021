@@ -6,7 +6,10 @@ from torch import nn
 class ZeroModel(nn.Module):
     def __init__(self):
         super(ZeroModel, self).__init__()
+        # optimizer will not work without parameters
+        self.register_parameter(name='arbitrary', param=torch.nn.Parameter(torch.randn(3)))
 
     # defines forward pass (never call yourself)
     def forward(self, x):
-        return torch.zeros_like(x, requires_grad=False)
+        # output is the same size as each channel of the input
+        return torch.zeros_like(x[0], requires_grad=False)
