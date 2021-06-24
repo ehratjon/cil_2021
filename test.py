@@ -1,5 +1,9 @@
 import numpy as np
 import kaggle
+import torch
+
+from torch.utils.data import DataLoader
+from torchvision import transforms
 
 # all code files used are stored in a tools folder
 # this allows us to directly import those files
@@ -9,5 +13,8 @@ sys.path.append("models")
 sys.path.append("tools")
 
 import data
+import simple_models
 
-dataset = data.RoadSegmentationDataset()
+# check if cuda available
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print('Using {} device'.format(device))
