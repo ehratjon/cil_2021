@@ -11,5 +11,11 @@ class ZeroModel(nn.Module):
 
     # defines forward pass (never call yourself)
     def forward(self, x):
-        # output is the same size as each channel of the input
-        return torch.zeros_like(x[0], requires_grad=False)
+        # we need to differentiate between batching and no batching
+        # without batching we get a 3d tensor (with the 1st dimension being the channels)
+        if(len(x.shape) == 3):
+            return torch.zeros_like(x[0], requires_grad=False)
+        # with batching we get a 4d tensor (with the 1st dimension being the number of samples)
+        else:
+            return torch.zeros_like(x[:,0,...], requires_grad=False)
+        
