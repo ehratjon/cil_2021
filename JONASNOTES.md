@@ -50,6 +50,7 @@
     - set all global seeds (pytorch, numpy, etc...)
     - choose a good simplest model for first baseline
     - explain why this model
+  - ~~create own branch, mike said so~~
   - first research: What do you need to make a first submission (do while coding)
   - Make a notebook that loads,trains,tests and submits code
   - "implement baseline"
