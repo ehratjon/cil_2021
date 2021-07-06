@@ -51,6 +51,12 @@
     - choose a good simplest model for first baseline
     - explain why this model
   - ~~create own branch, mike said so~~
+  - next day
+    - write test cases to test every component alone
+    - write more intuitive model with grad, since testing with no grad is difficult
+      - only one node
+    - write test cases for new model and better visualizations to get a glimpse of things
+    - go through train.py again and check if the code makes sense
   - first research: What do you need to make a first submission (do while coding)
   - Make a notebook that loads,trains,tests and submits code
   - "implement baseline"
