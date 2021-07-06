@@ -120,6 +120,14 @@
 - create and download api token: https://www.kaggle.com/docs/api
 - download data into folder `kaggle competitions download -c cil-road-segmentation-2021`
 - unzip data `unzip cil-road-segmentation-2021.zip -d cil_data` (take care that this folder might already exist in our repo since it also contains files)
+- if already present this can be done with
+``` 
+unzip cil-road-segmentation-2021.zip -d cil_data2 
+mv cil_data2/test_images cil_data/test_images
+mv cil_data2/training cil_data/training
+mv cil_data2/sample_submission.csv cil_data/sample_submission.csv
+rm -r cil_data2
+```
 
 ## Data
 
