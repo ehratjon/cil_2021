@@ -2,7 +2,6 @@ import numpy as np
 import kaggle
 
 import torch
-from sklearn.metrics import f1_score
 
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -16,6 +15,7 @@ sys.path.append("tools")
 
 import data
 import simple_models
+import loss_functions
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -91,7 +91,7 @@ def main():
 
     # choose loss function
     # f1_score with average="samples" is the loss function used for testing
-    loss_fn = f1_score
+    loss_fn = loss_functions.mean_f_score
 
     # choose optimizer
     optimizer = torch.optim.SGD(model.parameters(), lr=hyperparameters["learning_rate"])
