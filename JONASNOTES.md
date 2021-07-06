@@ -47,6 +47,7 @@
     - does this all really work???????????????????????????
     - write model that always guesses black
     - write model with one node or so
+    - set all global seeds (pytorch, numpy, etc...)
     - choose a good simplest model for first baseline
     - explain why this model
   - first research: What do you need to make a first submission (do while coding)
@@ -114,6 +115,11 @@
 - activate venv: `source ../cil_venv/bin/activate`
 - start a notebook: `jupyter-notebook kaggle_intro.ipynb`
 - add packages: `pip install numpy` and afterwards: `pip freeze > requirements.txt`
+
+### Download data
+- create and download api token: https://www.kaggle.com/docs/api
+- download data into folder `kaggle competitions download -c cil-road-segmentation-2021`
+- unzip data `unzip cil-road-segmentation-2021.zip -d cil_data` (take care that this folder might already exist in our repo since it also contains files)
 
 ## Data
 
