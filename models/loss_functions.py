@@ -37,8 +37,7 @@ def mean_f_score(y_pred, y_true, average=torch.mean):
     assert y_pred.shape == y_true.shape
 
     # we will need both to be of type float to compute the mean
-    y_true.float()
-    print(y_true)
+    y_true = y_true.float()
     
     # without batching y_pred will have 2 dimensions, else 3 and we need
     # to accomodate for that
@@ -49,5 +48,5 @@ def mean_f_score(y_pred, y_true, average=torch.mean):
         scores = []
         for i in range(batch_size):
             scores.append(mean_f_score_subroutine(y_pred[i], y_true[i]))
-        return average(torch.tensor(scores))
+        return average(torch.tensor(scores, requires_grad=True))
     
