@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-import numpy as np
+import torch
 import matplotlib.image as mpimg
 import re
 
@@ -9,7 +9,7 @@ foreground_threshold = 0.25 # percentage of pixels > 1 required to assign a fore
 
 # assign a label to a patch
 def patch_to_label(patch):
-    df = np.mean(patch)
+    df = torch.mean(patch)
     if df > foreground_threshold:
         return 1
     else:
