@@ -23,12 +23,13 @@ import loss_functions
 reproducible = True
 
 # specify if you want to store and load the model
-store_model = False
+load_model = False
+store_model = True
 
 # set random seeds
 # see: https://pytorch.org/docs/stable/notes/randomness.html
 if(reproducible):
-    # store_model = False # if model is stored, obviously the results will change
+    load_model = False # if model is loaded and stored every time, obviously the results will change
     torch.manual_seed(0)
     torch.cuda.manual_seed(0)
     torch.use_deterministic_algorithms(mode=True)
@@ -62,9 +63,7 @@ def train(dataloader, model, loss_fn, optimizer):
         loss.backward()
         optimizer.step()
 
-        if batch_number % 100 == 0:
-            loss, current = loss.item(), batch_number * len(sample["image"])
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+        print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")
 
 
 """
@@ -79,11 +78,9 @@ def evaluate(dataloader, model, loss_fn):
         for sample in dataloader:
             pred = model(sample["image"])
             test_loss += loss_fn(pred, sample["ground_truth"]).item()
-            correct += (pred == sample["ground_truth"]).type(torch.float).sum().item()
 
     test_loss /= num_batches
-    correct /= size
-    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    print(f"Eval avg loss: {test_loss:>8f} \n")
 
 
 def main():
@@ -134,7 +131,7 @@ def main():
             batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
 
     # choose model
-    if(store_model and os.path.exists("model.pth")):
+    if(load_model and os.path.exists("model.pth")):
         print("Model loaded from 'model.pth'")
         model = torch.load('model.pth')
     else:
@@ -155,6 +152,7 @@ def main():
         train(train_dataloader, model, loss_fn, optimizer)
         evaluate(eval_dataloader, model, loss_fn)
     
+    # stores model such that it can be reloaded later
     if(store_model):
         torch.save(model, 'model.pth')
     
