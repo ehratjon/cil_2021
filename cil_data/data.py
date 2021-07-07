@@ -96,7 +96,7 @@ class RoadSegmentationDataset(Dataset):
         image = io.imread(image_name)
         ground_truth = io.imread(ground_truth_name)
 
-        sample = {'image': image, 'ground_truth': ground_truth}
+        sample = {'image': image, 'ground_truth': ground_truth, 'original_id': idx}
 
         if self.transform:
             sample = self.transform(sample)
@@ -145,7 +145,7 @@ class RoadSegmentationTestDataset(Dataset):
         
         image = io.imread(image_name)
 
-        sample = {'image': image, 'ground_truth': None}
+        sample = {'image': image, 'ground_truth': None, 'original_id': idx}
 
         if self.transform:
             sample = self.transform(sample)
