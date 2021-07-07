@@ -1,7 +1,6 @@
 import numpy as np
-import kaggle
-
 import torch
+import random
 
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -13,10 +12,38 @@ sys.path.append("cil_data")
 sys.path.append("models")
 sys.path.append("tools")
 
+# import of local files
 import data
 import simple_models
 import loss_functions
 
+# specify if you want your result to be reproducible or not
+reproducible = True
+
+# set random seeds
+# see: https://pytorch.org/docs/stable/notes/randomness.html
+if(reproducible):
+    torch.manual_seed(0)
+    torch.cuda.manual_seed(0)
+    torch.use_deterministic_algorithms(mode=True)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    random.seed(0)
+    np.random.seed(0)
+
+
+"""
+For the data loader we will need to additionally set the seed every time
+"""
+def seed_worker(worker_id):
+    worker_seed = torch.initial_seed() % 2**32
+    np.random.seed(worker_seed)
+    random.seed(worker_seed)
+
+
+"""
+trains ...
+"""
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     for batch_number, sample in enumerate(dataloader):
@@ -34,6 +61,9 @@ def train(dataloader, model, loss_fn, optimizer):
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 
+"""
+evaluates ...
+"""
 def evaluate(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
@@ -80,11 +110,22 @@ def main():
         dataset_size - train_split_size
         ])
 
-    # initiate dataloader for training and evaluation datasets
-    train_dataloader = DataLoader(train_dataset, 
-        batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
-    eval_dataloader = DataLoader(eval_dataset, 
-        batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
+    if(reproducible):
+        # initiate generator to remove randomness from data loader
+        g = torch.Generator()
+        g.manual_seed(0)
+
+        # initiate dataloader for training and evaluation datasets
+        train_dataloader = DataLoader(train_dataset, 
+            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], worker_init_fn=seed_worker, generator=g)
+        eval_dataloader = DataLoader(eval_dataset, 
+            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], worker_init_fn=seed_worker, generator=g)
+    else:
+        # initiate dataloader for training and evaluation datasets
+        train_dataloader = DataLoader(train_dataset, 
+            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
+        eval_dataloader = DataLoader(eval_dataset, 
+            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
 
     # choose model
     model = simple_models.ZeroModel().to(device)
