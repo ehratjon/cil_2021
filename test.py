@@ -22,5 +22,5 @@ print('Using {} device'.format(device))
 # specify dataset
 dataset = data.RoadSegmentationDataset()
 
-print(dataset[1]["image"].shape)
-print(dataset[1]["ground_truth"].shape)
+print(dataset[0]["image"].shape)
+print(dataset[0]["ground_truth"].shape)
