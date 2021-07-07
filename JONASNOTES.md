@@ -53,10 +53,18 @@
   - ~~create own branch, mike said so~~
   - next day
     - write test cases to test every component alone
+      - really seems like convert_into_label_list_for_patches works strangely...
+      - can be used to then compute torch.eq(a,b) to compute accuracy
+      - can be used to simplify the loss function
+      - leave old loss function alone and try to write a new one that is simpler and 
+        works with only tensor operations
     - write more intuitive model with grad, since testing with no grad is difficult
       - only one node
     - write test cases for new model and better visualizations to get a glimpse of things
+    - remove test.py and include these things in train.py
     - go through train.py again and check if the code makes sense
+  - we want our predictions to be between 0 and 1. make sure that is the case
+    - with 0.25 being the threshhold
   - first research: What do you need to make a first submission (do while coding)
   - Make a notebook that loads,trains,tests and submits code
   - "implement baseline"
