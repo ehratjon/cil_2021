@@ -47,9 +47,9 @@
     - ~~does this all really work???????????????????????????~~
     - ~~write model that always guesses black~~
     - ~~write model with one node or so (added to next todo list)~~
-    - set all global seeds (pytorch, numpy, etc...)
-    - choose a good simplest model for first baseline
-    - explain why this model
+    - ~~set all global seeds (pytorch, numpy, etc...)~~
+    - ~~choose a good simplest model for first baseline~~
+    - ~~explain why this model~~
   - ~~create own branch, mike said so~~
   - next day
     - write test cases to test every component alone
@@ -60,12 +60,15 @@
   - first research: What do you need to make a first submission (do while coding)
   - Make a notebook that loads,trains,tests and submits code
   - "implement baseline"
+    - choose a good simplest model for first baseline
+    - explain why this model
   - write model testing
   - use `kaggle competitions submit -c cil-road-segmentation-2021 -f submission.csv -m "Message"`
   - look at mask_to_submission.py and submission_to_mask.py
   - write submission
   - submit project
 - Change from pytorch to pytorch lightning
+- Comment everything
 - More Research
   - Understand submission format, maybe can adapt evaluation to that
     - read make_submission code
