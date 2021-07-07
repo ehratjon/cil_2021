@@ -179,7 +179,7 @@ class Downscale(object):
         else:
             new_ground_truth = None
 
-        return {'image': new_image, 'ground_truth': new_ground_truth}
+        return {'image': new_image, 'ground_truth': new_ground_truth, 'original_id': sample['original_id']}
 
 
 class Rescale(object):
@@ -222,7 +222,7 @@ class Rescale(object):
         else:
             new_ground_truth = None
 
-        return {'image': new_image, 'ground_truth': new_ground_truth}
+        return {'image': new_image, 'ground_truth': new_ground_truth, 'original_id': sample['original_id']}
 
 
 class RandomCrop(object):
@@ -255,7 +255,7 @@ class RandomCrop(object):
         else:
             new_ground_truth = None
 
-        return {'image': new_image, 'ground_truth': new_ground_truth}
+        return {'image': new_image, 'ground_truth': new_ground_truth, 'original_id': sample['original_id']}
 
 
 class ToTensor(object):
@@ -270,4 +270,5 @@ class ToTensor(object):
         image = image.transpose((2, 0, 1))
         # ground_truth = ground_truth.transpose((0, 1))
         return {'image': torch.from_numpy(image),
-                'ground_truth': torch.from_numpy(ground_truth)}
+                'ground_truth': torch.from_numpy(ground_truth),
+                'original_id': sample['original_id']}
