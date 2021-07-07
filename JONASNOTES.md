@@ -41,12 +41,12 @@
   - ~~test data loader~~
     - ~~maybe rescale needs real images instead of numpy images~~
     - ~~(https://stackoverflow.com/questions/26681756/how-to-convert-a-python-numpy-array-to-an-rgb-image-with-opencv-2-4)~~
-  - write model training
-    - read through https://pytorch.org/tutorials/beginner/basics/intro.html
-    - how to split data into train/eval for neural network with dataloader
-    - does this all really work???????????????????????????
-    - write model that always guesses black
-    - write model with one node or so
+  - ~~write model training~~
+    - ~~read through https://pytorch.org/tutorials/beginner/basics/intro.html~~
+    - ~~how to split data into train/eval for neural network with dataloader~~
+    - ~~does this all really work???????????????????????????~~
+    - ~~write model that always guesses black~~
+    - ~~write model with one node or so (added to next todo list)~~
     - set all global seeds (pytorch, numpy, etc...)
     - choose a good simplest model for first baseline
     - explain why this model
@@ -65,6 +65,7 @@
   - look at mask_to_submission.py and submission_to_mask.py
   - write submission
   - submit project
+- Change from pytorch to pytorch lightning
 - More Research
   - Understand submission format, maybe can adapt evaluation to that
     - read make_submission code
@@ -74,6 +75,8 @@
   - Search for similar stuff online (spatial u-nets etc.)
   - Read through lecture notes and try to improve
   - Read through all piazza posts and try to improve
+  - go through other tutorials to add more visualization or simplicity etc...
+    - like https://pytorch.org/tutorials/beginner/basics/intro.html
 - Find novel solution
   - debug
   - optimise to data 
