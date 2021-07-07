@@ -4,6 +4,8 @@ cil_data/sample_submission.csv
 
 cil-road-segmentation-2021.zip
 
+model.pth
+
 .ipynb_*
 .vscode
 __pycache__

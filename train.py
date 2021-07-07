@@ -1,3 +1,6 @@
+import sys
+import os
+
 import numpy as np
 import torch
 import random
@@ -7,7 +10,6 @@ from torchvision import transforms
 
 # all code files used are stored in a tools folder
 # this allows us to directly import those files
-import sys
 sys.path.append("cil_data")
 sys.path.append("models")
 sys.path.append("tools")
@@ -20,9 +22,13 @@ import loss_functions
 # specify if you want your result to be reproducible or not
 reproducible = True
 
+# specify if you want to store and load the model
+store_model = False
+
 # set random seeds
 # see: https://pytorch.org/docs/stable/notes/randomness.html
 if(reproducible):
+    # store_model = False # if model is stored, obviously the results will change
     torch.manual_seed(0)
     torch.cuda.manual_seed(0)
     torch.use_deterministic_algorithms(mode=True)
@@ -128,7 +134,13 @@ def main():
             batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
 
     # choose model
-    model = simple_models.ZeroModel().to(device)
+    if(store_model and os.path.exists("model.pth")):
+        print("Model loaded from 'model.pth'")
+        model = torch.load('model.pth')
+    else:
+        model = simple_models.ZeroModel().to(device)
+    
+    print("Model used: {} \n" .format(model))
 
     # choose loss function
     # f1_score with average="samples" is the loss function used for testing
@@ -142,6 +154,10 @@ def main():
         print(f"Epoch {epoch+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
         evaluate(eval_dataloader, model, loss_fn)
+    
+    if(store_model):
+        torch.save(model, 'model.pth')
+    
     print("Done!")
 
 
