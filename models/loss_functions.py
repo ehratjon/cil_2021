@@ -12,6 +12,19 @@ patch_size = 16
 def sklearn_f1_score(y_pred, y_true):
     return f1_score(y_true, y_pred, average="samples")
 
+
+# for checking purposes returns a list of labels, one for each patch
+def convert_into_label_list_for_patches(y):
+    y = y.float()
+    labels = []
+    for j in range(0, y.shape[1], patch_size):
+        for i in range(0, y.shape[0], patch_size):
+            y_patch = y[i:i + patch_size, j:j + patch_size]
+            y_patch_label = mask_to_submission.patch_to_label(y_patch)
+            labels.append(y_patch_label)
+    return torch.tensor(labels)    
+
+
 # subroutine of mean_f_score, computes error for one sample
 def mean_f_score_subroutine(y_pred, y_true):
     number_of_correct_patches = 0
