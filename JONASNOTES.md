@@ -26,55 +26,57 @@
   - ~~Download data from kaggle~~
   - ~~Add gitignore as to not upload data~~
 - Implement Baseline
-  - write data loader
-    - ~~install pytorch, pandas, sckit_image and pip freeze those~~
-    - ~~push everything then delte .vscode folder locally~~
-    - ~~how to handle that training images = 400x400pixels and test images = 608x608?~~
-    - ~~no rescaling -> this might result in unwated artifacts...~~
-    - ~~implement test dataset~~
-    - ~~implement transformers as in: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html~~
-    - ~~make sure all transformers also work if groundtruth is none!~~
-    - ~~additionally go through these links to have a full data loader finished~~
-      - ~~https://pytorch.org/tutorials/recipes/recipes/custom_dataset_transforms_loader.html~~
-      - ~~https://pytorch.org/tutorials/beginner/basics/data_tutorial.html~~
-    - ~~implement flip~~
-  - ~~test data loader~~
-    - ~~maybe rescale needs real images instead of numpy images~~
-    - ~~(https://stackoverflow.com/questions/26681756/how-to-convert-a-python-numpy-array-to-an-rgb-image-with-opencv-2-4)~~
-  - ~~write model training~~
-    - ~~read through https://pytorch.org/tutorials/beginner/basics/intro.html~~
-    - ~~how to split data into train/eval for neural network with dataloader~~
-    - ~~does this all really work???????????????????????????~~
-    - ~~write model that always guesses black~~
-    - ~~write model with one node or so (added to next todo list)~~
-    - ~~set all global seeds (pytorch, numpy, etc...)~~
-    - ~~choose a good simplest model for first baseline~~
-    - ~~explain why this model~~
-  - ~~create own branch, mike said so~~
-  - next day
-    - write test cases to test every component alone
-      - really seems like convert_into_label_list_for_patches works strangely...
-      - can be used to then compute torch.eq(a,b) to compute accuracy
-      - can be used to simplify the loss function
-      - leave old loss function alone and try to write a new one that is simpler and 
-        works with only tensor operations
-    - write more intuitive model with grad, since testing with no grad is difficult
-      - only one node
-    - write test cases for new model and better visualizations to get a glimpse of things
-    - remove test.py and include these things in train.py
-    - go through train.py again and check if the code makes sense
-  - we want our predictions to be between 0 and 1. make sure that is the case
-    - with 0.25 being the threshhold
-  - first research: What do you need to make a first submission (do while coding)
-  - Make a notebook that loads,trains,tests and submits code
-  - "implement baseline"
-    - choose a good simplest model for first baseline
-    - explain why this model
-  - write model testing
-  - use `kaggle competitions submit -c cil-road-segmentation-2021 -f submission.csv -m "Message"`
-  - look at mask_to_submission.py and submission_to_mask.py
-  - write submission
-  - submit project
+- write data loader
+  - ~~install pytorch, pandas, sckit_image and pip freeze those~~
+  - ~~push everything then delte .vscode folder locally~~
+  - ~~how to handle that training images = 400x400pixels and test images = 608x608?~~
+  - ~~no rescaling -> this might result in unwated artifacts...~~
+  - ~~implement test dataset~~
+  - ~~implement transformers as in: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html~~
+  - ~~make sure all transformers also work if groundtruth is none!~~
+  - ~~additionally go through these links to have a full data loader finished~~
+    - ~~https://pytorch.org/tutorials/recipes/recipes/custom_dataset_transforms_loader.html~~
+    - ~~https://pytorch.org/tutorials/beginner/basics/data_tutorial.html~~
+  - ~~implement flip~~
+- ~~test data loader~~
+  - ~~maybe rescale needs real images instead of numpy images~~
+  - ~~(https://stackoverflow.com/questions/26681756/how-to-convert-a-python-numpy-array-to-an-rgb-image-with-opencv-2-4)~~
+- ~~write model training~~
+  - ~~read through https://pytorch.org/tutorials/beginner/basics/intro.html~~
+  - ~~how to split data into train/eval for neural network with dataloader~~
+  - ~~does this all really work???????????????????????????~~
+  - ~~write model that always guesses black~~
+  - ~~write model with one node or so (added to next todo list)~~
+  - ~~set all global seeds (pytorch, numpy, etc...)~~
+  - ~~choose a good simplest model for first baseline~~
+  - ~~explain why this model~~
+- ~~create own branch, mike said so~~
+- before continuing with test cases start with new model
+  - need to find out how loss function needs to work such that we optimize correclty
+  - create one node model
+- write test cases to test every component alone
+  - really seems like convert_into_label_list_for_patches works strangely...
+  - can be used to then compute torch.eq(a,b) to compute accuracy
+  - can be used to simplify the loss function
+  - leave old loss function alone and try to write a new one that is simpler and 
+    works with only tensor operations
+- write more intuitive model with grad, since testing with no grad is difficult
+  - only one node
+- write test cases for new model and better visualizations to get a glimpse of things
+- remove test.py and include these things in train.py
+- go through train.py again and check if the code makes sense
+- we want our predictions to be between 0 and 1. make sure that is the case
+  - with 0.25 being the threshhold
+- first research: What do you need to make a first submission (do while coding)
+- Make a notebook that loads,trains,tests and submits code
+- "implement baseline"
+  - choose a good simplest model for first baseline
+  - explain why this model
+- write model testing
+- use `kaggle competitions submit -c cil-road-segmentation-2021 -f submission.csv -m "Message"`
+- look at mask_to_submission.py and submission_to_mask.py
+- write submission
+- submit project
 - Change from pytorch to pytorch lightning
 - Comment everything
 - More Research
