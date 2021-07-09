@@ -13,13 +13,7 @@ class ZeroModel(nn.Module):
 
     # defines forward pass (never call yourself)
     def forward(self, x):
-        # we need to differentiate between batching and no batching
-        # without batching we get a 3d tensor (with the 1st dimension being the channels)
-        if(len(x.shape) == 3):
-            return torch.zeros_like(x[0], dtype=torch.float, requires_grad=False)
-        # with batching we get a 4d tensor (with the 1st dimension being the number of samples)
-        else:
-            return torch.zeros_like(x[:,0,...], dtype=torch.float, requires_grad=False)
+        return torch.zeros_like(x[:,0,...], dtype=torch.float, requires_grad=False)
         
 
 """
@@ -36,14 +30,12 @@ class OneNodeModel(nn.Module):
 
     # defines forward pass (never call yourself)
     def forward(self, x):
-        batching = (len(x.shape) == 4)
-        # transpose to get the channels at last index
-        x_t = x.permute((0, 2, 3, 1)) if batching else x.permute((1, 2, 0))
+        # transpose to get the channels at last index (first index is size of batch)
+        x_t = x.permute((0, 2, 3, 1))
         # multiply with weights
         z = torch.matmul(x_t, self.weights)
         # flatten last dimension
-        z_flat = torch.flatten(z, start_dim=2) if batching else torch.flatten(z, start_dim=1)
+        z_flat = torch.flatten(z, start_dim=2)
         # relu round
-
         z_relu = self.relu(z_flat)
         return z_relu

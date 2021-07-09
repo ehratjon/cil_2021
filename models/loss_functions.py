@@ -47,13 +47,9 @@ to be done on tensors
 """
 def mean_f_score(y_pred, y_true, average=torch.mean):
     assert y_pred.shape == y_true.shape
-    # without batching y_pred will have 2 dimensions, else 3 and we need
-    # to accomodate for that
-    if(len(y_pred.shape) == 2):
-        return mean_f_score_subroutine(y_pred, y_true)
-    else:
-        batch_size = y_pred.shape[0]
-        scores = []
-        for i in range(batch_size):
-            scores.append(mean_f_score_subroutine(y_pred[i], y_true[i]))
-        return average(torch.tensor(scores, requires_grad=True))
+    
+    batch_size = y_pred.shape[0]
+    scores = []
+    for i in range(batch_size):
+        scores.append(mean_f_score_subroutine(y_pred[i], y_true[i]))
+    return average(torch.tensor(scores, requires_grad=True))

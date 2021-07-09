@@ -51,10 +51,13 @@
   - ~~choose a good simplest model for first baseline~~
   - ~~explain why this model~~
 - ~~create own branch, mike said so~~
-- MAKE DATA FLOAT FROM BEGINNING OR ELSE SHIET
-  - add in make_tensor transformer
-  - or add make_float_tensor as transformer
-  - then remove everything u made to float
+- ~~MAKE DATA FLOAT FROM BEGINNING OR ELSE SHIET~~
+  - ~~add in make_tensor transformer~~
+  - ~~or add make_float_tensor as transformer~~
+  - ~~then remove everything u made to float~~
+- ~~find out why gradient not working~~
+- print all params with values + grads
+- reintroduce correct loss functions
 - before continuing with test cases start with new model
   - need to find out how loss function needs to work such that we optimize correclty
   - create one node model

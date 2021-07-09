@@ -41,6 +41,7 @@ if(reproducible):
 
 """
 For the data loader we will need to additionally set the seed every time
+(should only be called if reproducible is set to True)
 """
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**32
@@ -49,7 +50,7 @@ def seed_worker(worker_id):
 
 
 """
-trains ...
+trains the model using one optimizer step for each batch in the dataloader
 """
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
@@ -63,11 +64,16 @@ def train(dataloader, model, loss_fn, optimizer):
         loss.backward()
         optimizer.step()
 
+        #for name, param in model.named_parameters():
+        #    print(name, param.data, param.grad)
+        #print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")
+        #print(model.weights.grad)
+        
         print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")
 
 
 """
-evaluates ...
+evaluates the model by computing the average loss over all batches in the data_loader
 """
 def evaluate(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
@@ -91,7 +97,7 @@ def main():
     # specify hyperparameters
     hyperparameters = {
         "epochs": 5,
-        "learning_rate": 1e-3, 
+        "learning_rate": 1e-2, 
         "batch_size": 44, 
         "shuffle": True,
         "train_eval_ratio": 0.9
@@ -122,13 +128,13 @@ def main():
         train_dataloader = DataLoader(train_dataset, 
             batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], worker_init_fn=seed_worker, generator=g)
         eval_dataloader = DataLoader(eval_dataset, 
-            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], worker_init_fn=seed_worker, generator=g)
+            batch_size=1, shuffle=hyperparameters["shuffle"], worker_init_fn=seed_worker, generator=g)
     else:
         # initiate dataloader for training and evaluation datasets
         train_dataloader = DataLoader(train_dataset, 
             batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
         eval_dataloader = DataLoader(eval_dataset, 
-            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
+            batch_size=1, shuffle=hyperparameters["shuffle"])
 
     # choose model
     if(load_model and os.path.exists("model.pth")):
@@ -144,7 +150,7 @@ def main():
     loss_fn = torch.nn.MSELoss()
 
     # choose optimizer
-    optimizer = torch.optim.SGD(model.parameters(), lr=hyperparameters["learning_rate"])
+    optimizer = torch.optim.Adam(model.parameters(), lr=hyperparameters["learning_rate"])
 
     # train
     for epoch in range(hyperparameters["epochs"]):
