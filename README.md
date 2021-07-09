@@ -25,8 +25,7 @@ Then you can execute the test-notebook:
 `jupyter-notebook kaggle_intro.ipynb`
 
 If you don't want to work with notebooks use the file:  
-- `train.py` for training model (i.e. setting weights)
-- `test.py` for testing model (i.e. create submission)
+- `train.py` for training and testing model
 - `test_cases.py` for testing if the code is correct
 
 ### Environment structure
