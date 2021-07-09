@@ -135,6 +135,10 @@
 - kaggle join link: https://www.kaggle.com/t/c5b92ef46fff4ec7b67f619c8e21d1bd
 - repository: https://github.com/ehratjon/cil_2021
 
+### Approaches
+- spatial dependent u-nets: https://www.researchgate.net/publication/350311259_Spatially_Dependent_U-Nets_Highly_Accurate_Architectures_for_Medical_Imaging_Segmentation
+- application thereof: https://github.com/aschneuw/road-segmentation-unet
+
 ## Code
 
 ### Setup
