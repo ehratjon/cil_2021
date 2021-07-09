@@ -15,7 +15,6 @@ def sklearn_f1_score(y_pred, y_true):
 
 # for checking purposes returns a list of labels, one for each patch
 def convert_into_label_list_for_patches(y):
-    y = y.float()
     labels = []
     for j in range(0, y.shape[1], patch_size):
         for i in range(0, y.shape[0], patch_size):
@@ -48,10 +47,6 @@ to be done on tensors
 """
 def mean_f_score(y_pred, y_true, average=torch.mean):
     assert y_pred.shape == y_true.shape
-
-    # we will need both to be of type float to compute the mean
-    y_true = y_true.float()
-    
     # without batching y_pred will have 2 dimensions, else 3 and we need
     # to accomodate for that
     if(len(y_pred.shape) == 2):
