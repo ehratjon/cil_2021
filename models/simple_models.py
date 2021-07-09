@@ -7,6 +7,8 @@ class ZeroModel(nn.Module):
     def __init__(self):
         super(ZeroModel, self).__init__()
         # optimizer will not work without parameters
+        # NOTE: this self.register_parameter seemed not to work for other models
+        #       instead, torch.nn.Parameter(...) was needed
         self.register_parameter(name='arbitrary', param=torch.nn.Parameter(torch.randn(3)))
 
     # defines forward pass (never call yourself)
@@ -29,9 +31,8 @@ class OneNodeModel(nn.Module):
     def __init__(self):
         super(OneNodeModel, self).__init__()
         # define single weight
-        self.weight = torch.randn((3, 1), dtype=torch.float, requires_grad=True)
+        self.weights = torch.nn.Parameter(torch.randn((3, 1), dtype=torch.float, requires_grad=True))
         self.relu = torch.nn.ReLU()
-        self.register_parameter(name='weigths', param=torch.nn.Parameter(self.weight))
 
     # defines forward pass (never call yourself)
     def forward(self, x):
@@ -39,12 +40,10 @@ class OneNodeModel(nn.Module):
         # transpose to get the channels at last index
         x_t = x.permute((0, 2, 3, 1)) if batching else x.permute((1, 2, 0))
         # multiply with weights
-        z = torch.matmul(x_t, self.weight)
+        z = torch.matmul(x_t, self.weights)
         # flatten last dimension
         z_flat = torch.flatten(z, start_dim=2) if batching else torch.flatten(z, start_dim=1)
         # relu round
-
-        print(f"weights {self.weight[0][0]:>5f}, {self.weight[1][0]:>5f}, {self.weight[2][0]:>5f}")
 
         z_relu = self.relu(z_flat)
         return z_relu
