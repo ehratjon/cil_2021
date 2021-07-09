@@ -63,3 +63,16 @@ def mean_f_score(y_pred, y_true, average=torch.mean):
             scores.append(mean_f_score_subroutine(y_pred[i], y_true[i]))
         return average(torch.tensor(scores, requires_grad=True))
     
+
+"""
+simple loss function to check if model is correct
+uses crossentropyloss
+"""
+class simple_loss(torch.Module):
+    
+    def __init__(self):
+        super(simple_loss, self).__init__()
+        self.loss = torch.nn.CrossEntropyLoss()
+
+    def forward(self, input, target):
+        return self.loss(input, target)
