@@ -72,7 +72,7 @@ evaluates ...
 def evaluate(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
-    test_loss, correct = 0, 0
+    test_loss = 0
 
     with torch.no_grad():
         for sample in dataloader:
