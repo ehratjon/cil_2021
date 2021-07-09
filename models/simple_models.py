@@ -20,22 +20,31 @@ class ZeroModel(nn.Module):
             return torch.zeros_like(x[:,0,...], dtype=torch.float, requires_grad=False)
         
 
-# multiplies every pixel with one value
+"""
+one node module with one weight per channel
+- multiplies weight with pixel and adds result of channels together
+- finish with relu
+"""
 class OneNodeModel(nn.Module):
     def __init__(self):
         super(OneNodeModel, self).__init__()
         # define single weight
         self.weight = torch.randn((3, 1), dtype=torch.float, requires_grad=True)
+        self.relu = torch.nn.ReLU()
+        self.register_parameter(name='weigths', param=torch.nn.Parameter(self.weight))
 
     # defines forward pass (never call yourself)
     def forward(self, x):
         batching = (len(x.shape) == 4)
         # transpose to get the channels at last index
-        x_t = x.transpose(0, 2, 3, 1) if batching else x.transpose(1, 2, 0)
+        x_t = x.permute((0, 2, 3, 1)) if batching else x.permute((1, 2, 0))
         # multiply with weights
         z = torch.matmul(x_t, self.weight)
         # flatten last dimension
         z_flat = torch.flatten(z, start_dim=2) if batching else torch.flatten(z, start_dim=1)
         # relu round
-        z_relu = torch.nn.ReLU(z_flat)
+
+        print(f"weights {self.weight[0][0]:>5f}, {self.weight[1][0]:>5f}, {self.weight[2][0]:>5f}")
+
+        z_relu = self.relu(z_flat)
         return z_relu

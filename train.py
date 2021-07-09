@@ -100,7 +100,7 @@ def main():
     # specify transforms you want for your data:
     data_transform = transforms.Compose([
         # we want our data to be stored as tensors
-        data.ToTensor()
+        data.ToFloatTensor()
     ])
 
     # specify dataset
@@ -135,13 +135,13 @@ def main():
         print("Model loaded from 'model.pth'")
         model = torch.load('model.pth')
     else:
-        model = simple_models.ZeroModel().to(device)
+        model = simple_models.OneNodeModel().to(device)
     
     print("Model used: {} \n" .format(model))
 
     # choose loss function
     # f1_score with average="samples" is the loss function used for testing
-    loss_fn = loss_functions.mean_f_score
+    loss_fn = torch.nn.MSELoss()
 
     # choose optimizer
     optimizer = torch.optim.SGD(model.parameters(), lr=hyperparameters["learning_rate"])

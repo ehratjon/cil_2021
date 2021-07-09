@@ -272,3 +272,19 @@ class ToTensor(object):
         return {'image': torch.from_numpy(image),
                 'ground_truth': torch.from_numpy(ground_truth),
                 'original_id': sample['original_id']}
+
+
+class ToFloatTensor(object):
+    """Convert ndarrays in sample to Tensors."""
+
+    def __call__(self, sample):
+        image, ground_truth = sample['image'], sample['ground_truth']
+
+        # swap color axis because
+        # numpy image: H x W x C
+        # torch image: C X H X W
+        image = image.transpose((2, 0, 1))
+        # ground_truth = ground_truth.transpose((0, 1))
+        return {'image': torch.from_numpy(image).float(),
+                'ground_truth': torch.from_numpy(ground_truth).float(),
+                'original_id': sample['original_id']}
