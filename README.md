@@ -12,33 +12,32 @@ Sign up for the project with your kaggle account. Once every one of us has an ac
 
 
 ### Environment setup
-Create a python environment wiih:  
+Create a python environment.
+E.g. wiih:  
 `python -m venv cil_venv` or `python3 -m venv cil_venv`
+or use virtualenvwrapper.
 
 To activate the environment:  
-`source cil_venv/bin/activate`
+`source cil_venv/bin/activate` or similar.
 
 To install all "necessary" things do (while inside the cil\_venv):  
 `pip install -r requirements.txt`
 
 Then you can execute the test-notebook:  
 `jupyter-notebook kaggle_intro.ipynb`
+or start the real notebook with
+`jupyter-notebook notebook.ipynb`
 
-If you don't want to work with notebooks use the file:  
-- `train.py` for training model
-- `test.py` for testing model
 
 ### Environment structure
 All notebooks are in the main folder. All code files (but `test.py`) are in either:  
 - the `cil_data` folder if they directly manipulate data
-- the `models` folder if they represent an ml model
-- the `tools` folder if none of the above apply 
-
-All sources used to write the code can be collected in:  
-`SOURCES.md`
 
 ### Adding packages
 If you install new packages with pip, add them to the requirements.txt:  
 `pip freeze > requirements.txt`
 
+A cleaner way is by use of pip-chill:
+`pip-chill > requirements.txt`
+but you need to have pip-chill installed.
 
