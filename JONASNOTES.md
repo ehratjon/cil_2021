@@ -56,8 +56,15 @@
   - ~~or add make_float_tensor as transformer~~
   - ~~then remove everything u made to float~~
 - ~~find out why gradient not working~~
-- print all params with values + grads
+- ~~print all params with values + grads~~
+  - ~~#for name, param in model.named_parameters():~~
+    ~~#print(name, param.data, param.grad)~~
+    ~~#print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")~~
+    ~~#print(model.weights.grad)~~
+    ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
+  - make it print multiple eval images by giving it as arugment
 - reintroduce correct loss functions
+- make sure loss functions work with batches and not with single sample
 - before continuing with test cases start with new model
   - need to find out how loss function needs to work such that we optimize correclty
   - create one node model
