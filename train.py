@@ -114,13 +114,10 @@ def main():
     train_dataloader, eval_dataloader = get_dataloader()
     
     # choose model
-    if(hyperparameters["load_model"] and os.path.exists("model.pth")):
-        model = torch.load('model.pth')
-        dw.write_info("Model loaded from 'model.pth'")
-        dw.set_model(model)
-    else:
-        model = simple_models.OneNodeModel().to(device)
-        dw.set_model(model)
+    load_model = hyperparameters["load_model"] and os.path.exists("model.pth")
+    model = torch.load('model.pth').to(device) if load_model else simple_models.OneNodeModel().to(device)
+    dw.write_info("Model loaded from 'model.pth' = {}".format(load_model))
+    dw.set_model(model)
     
     # choose loss function
     loss_fn = torch.nn.MSELoss()
