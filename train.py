@@ -18,35 +18,55 @@ sys.path.append("tools")
 import data
 import simple_models
 import loss_functions
+import reproducible as repr
 
-# specify if you want your result to be reproducible or not
-reproducible = True
+# specify hyperparameters
+hyperparameters = {
+    "epochs": 5,
+    "learning_rate": 1e-2, 
+    "batch_size": 44, 
+    "shuffle": True,
+    "train_eval_ratio": 0.9,
+    # not really hyperparameters but used to set behaviour of model
+    "reproducible": True,
+    "load_model": False,
+    "store_model": True,
+}
 
-# specify if you want to store and load the model
-load_model = False
-store_model = True
-
-# set random seeds
-# see: https://pytorch.org/docs/stable/notes/randomness.html
-if(reproducible):
-    load_model = False # if model is loaded and stored every time, obviously the results will change
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
-    torch.use_deterministic_algorithms(mode=True)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    random.seed(0)
-    np.random.seed(0)
+if(hyperparameters["reproducible"]): repr.set_deterministic()
 
 
 """
-For the data loader we will need to additionally set the seed every time
-(should only be called if reproducible is set to True)
+Returns dataloader for training and evaluating model
 """
-def seed_worker(worker_id):
-    worker_seed = torch.initial_seed() % 2**32
-    np.random.seed(worker_seed)
-    random.seed(worker_seed)
+def get_dataloader():
+    # specify transforms you want for your data:
+    data_transform = transforms.Compose([
+        # we want our data to be stored as tensors
+        data.ToFloatTensor()
+    ])
+
+    # specify dataset
+    dataset = data.RoadSegmentationDataset(transform=data_transform)
+    dataset_size = len(dataset) # size of dataset needed to compute split
+    train_split_size = int(dataset_size * hyperparameters["train_eval_ratio"])
+    # split dataset in training and evaluation sets
+    train_dataset, eval_dataset = torch.utils.data.random_split(dataset, [
+        train_split_size, 
+        dataset_size - train_split_size
+        ])
+
+    # initiate dataloader for training and evaluation datasets
+    train_dataloader = DataLoader(train_dataset, 
+        batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], 
+        worker_init_fn=repr.seed_worker if hyperparameters["reproducible"] else None, 
+        generator=repr.g if hyperparameters["reproducible"] else None)
+    eval_dataloader = DataLoader(eval_dataset, 
+        batch_size=1, shuffle=hyperparameters["shuffle"], 
+        worker_init_fn=repr.seed_worker if hyperparameters["reproducible"] else None, 
+        generator=repr.g if hyperparameters["reproducible"] else None)
+
+    return train_dataloader, eval_dataloader
 
 
 """
@@ -64,13 +84,6 @@ def train(dataloader, model, loss_fn, optimizer):
         loss.backward()
         optimizer.step()
 
-        #for name, param in model.named_parameters():
-        #    print(name, param.data, param.grad)
-        #print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")
-        #print(model.weights.grad)
-        
-        print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")
-
 
 """
 evaluates the model by computing the average loss over all batches in the data_loader
@@ -86,58 +99,19 @@ def evaluate(dataloader, model, loss_fn):
             test_loss += loss_fn(pred, sample["ground_truth"]).item()
 
     test_loss /= num_batches
-    print(f"Eval avg loss: {test_loss:>8f} \n")
+    return test_loss
 
 
 def main():
     # check if cuda available
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Using {} device'.format(device))
-
-    # specify hyperparameters
-    hyperparameters = {
-        "epochs": 5,
-        "learning_rate": 1e-2, 
-        "batch_size": 44, 
-        "shuffle": True,
-        "train_eval_ratio": 0.9
-    }
-
-    # specify transforms you want for your data:
-    data_transform = transforms.Compose([
-        # we want our data to be stored as tensors
-        data.ToFloatTensor()
-    ])
-
-    # specify dataset
-    dataset = data.RoadSegmentationDataset(transform=data_transform)
-    dataset_size = len(dataset) # size of dataset needed to compute split
-    train_split_size = int(dataset_size * hyperparameters["train_eval_ratio"])
-    # split dataset in training and evaluation sets
-    train_dataset, eval_dataset = torch.utils.data.random_split(dataset, [
-        train_split_size, 
-        dataset_size - train_split_size
-        ])
-
-    if(reproducible):
-        # initiate generator to remove randomness from data loader
-        g = torch.Generator()
-        g.manual_seed(0)
-
-        # initiate dataloader for training and evaluation datasets
-        train_dataloader = DataLoader(train_dataset, 
-            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], worker_init_fn=seed_worker, generator=g)
-        eval_dataloader = DataLoader(eval_dataset, 
-            batch_size=1, shuffle=hyperparameters["shuffle"], worker_init_fn=seed_worker, generator=g)
-    else:
-        # initiate dataloader for training and evaluation datasets
-        train_dataloader = DataLoader(train_dataset, 
-            batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"])
-        eval_dataloader = DataLoader(eval_dataset, 
-            batch_size=1, shuffle=hyperparameters["shuffle"])
-
+    
+    # get dataloaders
+    train_dataloader, eval_dataloader = get_dataloader()
+    
     # choose model
-    if(load_model and os.path.exists("model.pth")):
+    if(hyperparameters["load_model"] and os.path.exists("model.pth")):
         print("Model loaded from 'model.pth'")
         model = torch.load('model.pth')
     else:
@@ -146,7 +120,6 @@ def main():
     print("Model used: {} \n" .format(model))
 
     # choose loss function
-    # f1_score with average="samples" is the loss function used for testing
     loss_fn = torch.nn.MSELoss()
 
     # choose optimizer
@@ -154,16 +127,15 @@ def main():
 
     # train
     for epoch in range(hyperparameters["epochs"]):
-        print(f"Epoch {epoch+1}\n-------------------------------")
         train(train_dataloader, model, loss_fn, optimizer)
-        evaluate(eval_dataloader, model, loss_fn)
+        test_loss = evaluate(eval_dataloader, model, loss_fn)
+        print(f"Epoch {epoch+1:>4d} Eval avg loss: {test_loss:>8f}")
     
     # stores model such that it can be reloaded later
-    if(store_model):
+    if(hyperparameters["store_model"]):
         torch.save(model, 'model.pth')
-    
-    print("Done!")
 
 
 if __name__ == "__main__":
     main()
+    print("Done!")
