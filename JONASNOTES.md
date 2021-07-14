@@ -64,6 +64,7 @@
     ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
   - make it print multiple eval images by giving it as arugment
 - reintroduce correct loss functions
+  - make sure to test it out completely!!!!
 - make sure loss functions work with batches and not with single sample
 - before continuing with test cases start with new model
   - need to find out how loss function needs to work such that we optimize correclty
