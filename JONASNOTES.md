@@ -143,6 +143,7 @@
   - predict only patches and neural network only looks at a patch
 - try to fit a lot of lines (or segments, especially for curved roads) as post processing
 - try to enforce conectivity of roads
+- find nets for cars and houses to substract from images (or for cars, differentiate between parking and road)
 
 ## Sources
 
