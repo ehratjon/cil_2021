@@ -3,14 +3,14 @@ import os
 class datawriter():
 
 
-    def __init__(self, store_path = "results/train"):
+    def __init__(self, store_path = "results/"):
         id = 0
-        while(os.path.exists( store_path + "/" + str(id) + "_info.txt")):
+        while(os.path.exists(store_path + str(id) + "_info.txt")):
             id += 1
 
-        self.info_file = open(store_path + "/" + str(id) + "_info.txt", "w")
-        self.loss_file = open(store_path + "/" + str(id) + "_loss.csv", "w")
-        self.para_file = open(store_path + "/" + str(id) + "_para.csv", "w")
+        self.loss_file = open(store_path + str(id) + "_loss.csv", "w")
+        self.info_file = open(store_path + str(id) + "_info.txt", "w")
+        self.para_file = open(store_path + str(id) + "_para.csv", "w")
 
         self.info_file.write("Try: {} \n".format(id))
         self.loss_file.write("Epoch, Avg Loss\n")
