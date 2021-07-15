@@ -31,6 +31,8 @@ hyperparameters = {
     "reproducible": True,
     "load_model": False,
     "store_model": True,
+    # choose if params are being stored in results file
+    "write_params": True,
 }
 
 

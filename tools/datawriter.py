@@ -1,5 +1,6 @@
 import os
 
+
 class datawriter():
 
 
@@ -8,14 +9,15 @@ class datawriter():
         while(os.path.exists(store_path + str(id) + "_info.txt")):
             id += 1
 
+        self.write_params = hyperparameters["write_params"]
+
         self.loss_file = open(store_path + str(id) + "_loss.csv", "w")
         self.info_file = open(store_path + str(id) + "_info.txt", "w")
-        self.para_file = open(store_path + str(id) + "_para.csv", "w")
+        if(self.write_params): self.para_file = open(store_path + str(id) + "_para.csv", "w")
 
         self.info_file.write("Try: {} \n".format(id))
         self.loss_file.write("Epoch, Avg Loss\n")
-        self.para_file.write("Epoch, Params\n")
-
+        if(self.write_params): self.para_file.write("Epoch, Params\n")
         self.info_file.write("Using {} device. \n".format(device))
         self.write_hyperparameters(hyperparameters)
 
@@ -32,19 +34,21 @@ class datawriter():
         self.info_file.write("\nModel used: {}\n".format(model))
         self.info_file.write("Model loaded from 'model.pth' = {} \n".format(load_model))
 
-        self.info_file.write("\n--- Parameters: ---\n")
-        for name, param in model.named_parameters():
-            self.info_file.write(f"{name:<15}: {str(param):>15}\n")
-        self.info_file.write("--- END Parameters ---\n")
+        if(self.write_params):
+            self.info_file.write("\n--- Parameters: ---\n")
+            for name, param in model.named_parameters():
+                self.info_file.write(f"{name:<15}: {str(param):>15}\n")
+            self.info_file.write("--- END Parameters ---\n")
 
 
     def write_eval(self, epoch, eval):
         self.loss_file.write(str(epoch) + ", " + str(eval["eval_loss"]) + "\n")
 
-        params = ""
-        for name, param in self.model.named_parameters():
-            params += str(param) + ", "
-        self.para_file.write(str(epoch) + ", " + params[0:-2] + "\n")
+        if(self.write_params):
+            params = ""
+            for name, param in self.model.named_parameters():
+                params += str(param) + ", "
+            self.para_file.write(str(epoch) + ", " + params[0:-2] + "\n")
 
 
     def write_info(self, string):
