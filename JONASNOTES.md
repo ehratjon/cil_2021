@@ -65,11 +65,16 @@
   - make it print multiple eval images by giving it as arugment
 - ~~eigeni dataloader file~~
 - help mike
-  - baselines ???
+  - normalize transformer for dataset
+  - find mean and st. deviation vom ganze dateset usefinde
+  - szweite netz schriebe wo predicted nimmt und sie versuecht zfixe
+  - write everything as tools that can be used by mike
+  - baselines ??? u-net, spatial u-net, sd u-net etc. (patch only prediction, black)
   - pyramid vs. up-conv in unets
   - eigeni loss function mit die vom mike vergliche uf sim model
 - reintroduce correct loss functions
   - make sure to test it out completely!!!!
+  - mini loss function isch nit e loss funciton will nit differentiable
 - make sure loss functions work with batches and not with single sample
 - before continuing with test cases start with new model
   - need to find out how loss function needs to work such that we optimize correclty
