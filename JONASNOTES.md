@@ -63,12 +63,18 @@
     ~~#print(model.weights.grad)~~
     ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
   - make it print multiple eval images by giving it as arugment
+- eigeni dataloader file
+- help mike
+  - baselines ???
+  - pyramid vs. up-conv in unets
+  - eigeni loss function mit die vom mike vergliche uf sim model
 - reintroduce correct loss functions
   - make sure to test it out completely!!!!
 - make sure loss functions work with batches and not with single sample
 - before continuing with test cases start with new model
   - need to find out how loss function needs to work such that we optimize correclty
   - create one node model
+- notebook project 3 vo exercises duregoh
 - write test cases to test every component alone
   - really seems like convert_into_label_list_for_patches works strangely...
   - can be used to then compute torch.eq(a,b) to compute accuracy
@@ -106,6 +112,7 @@
   - go through other tutorials to add more visualization or simplicity etc...
     - like https://pytorch.org/tutorials/beginner/basics/intro.html
 - Find novel solution
+  - look at ideas
   - debug
   - optimise to data 
   - how to handle that training images = 400x400pixels and test images = 608x608?
