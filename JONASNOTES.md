@@ -58,10 +58,10 @@
 - ~~find out why gradient not working~~
 - ~~print all params with values + grads~~
   - ~~#for name, param in model.named_parameters():~~
-    ~~#print(name, param.data, param.grad)~~
-    ~~#print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")~~
-    ~~#print(model.weights.grad)~~
-    ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
+  - ~~#print(name, param.data, param.grad)~~
+  - ~~#print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")~~
+  - ~~#print(model.weights.grad)~~
+  -  ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
   - make it print multiple eval images by giving it as arugment
 - eigeni dataloader file
 - help mike
@@ -84,6 +84,9 @@
 - write more intuitive model with grad, since testing with no grad is difficult
   - only one node
 - focus more on pre and postprocessing
+- batch size, learning rate etc. is set automatically in pytorch ligtning. 
+  - how to optimize in pytorch without lightning or change to lightning
+  - what hyperparameters need to be optimized ???
 - write test cases for new model and better visualizations to get a glimpse of things
 - remove test.py and include these things in train.py
 - go through train.py again and check if the code makes sense
