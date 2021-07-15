@@ -100,6 +100,7 @@ def main():
     
     # stores model such that it can be reloaded later
     if(hyperparameters["store_model"]): torch.save(model, 'model.pth')
+    dw.close()
 
 
 if __name__ == "__main__":

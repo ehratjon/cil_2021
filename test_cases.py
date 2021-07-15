@@ -98,7 +98,6 @@ def test_loss_function():
     print(loss2.item())
         
 
-
 # goes through all tests (new ones need to be added manually)
 def test_all():
     test_dataset()

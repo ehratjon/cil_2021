@@ -33,7 +33,7 @@ def get_dataloader(hyperparameters):
         worker_init_fn=reproducible.seed_worker if hyperparameters["reproducible"] else None, 
         generator=reproducible.g if hyperparameters["reproducible"] else None)
     eval_dataloader = DataLoader(eval_dataset, 
-        batch_size=1, shuffle=hyperparameters["shuffle"], 
+        batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], 
         worker_init_fn=reproducible.seed_worker if hyperparameters["reproducible"] else None, 
         generator=reproducible.g if hyperparameters["reproducible"] else None)
 

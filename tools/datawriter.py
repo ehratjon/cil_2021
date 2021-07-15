@@ -15,6 +15,9 @@ class datawriter():
         self.info_file = open(store_path + str(id) + "_info.txt", "w")
         if(self.write_params): self.para_file = open(store_path + str(id) + "_para.csv", "w")
 
+        self.image_path = store_path + str(id) + "_images/"
+        os.mkdir(self.image_path)
+
         self.info_file.write("Try: {} \n".format(id))
         self.loss_file.write("Epoch, Avg Loss\n")
         if(self.write_params): self.para_file.write("Epoch, Params\n")
@@ -48,7 +51,12 @@ class datawriter():
             params = ""
             for name, param in self.model.named_parameters():
                 params += str(param) + ", "
-            self.para_file.write(str(epoch) + ", " + params[0:-2] + "\n")
+            
+            params_string = params[0:-2].replace("\n", "").replace("\r", "").replace(
+                "\t", "").replace(",", " / ").replace("  ","")
+            self.para_file.write(str(epoch) + ", " + "(" + params_string + ")" + "\n")
+        
+        #TODO store images....
 
 
     def write_info(self, string):
@@ -56,7 +64,7 @@ class datawriter():
 
 
     def close(self):
-        self.info_file.write("Done! Files are being closed.")
+        self.info_file.write("\nDone! Files are being closed.")
         self.info_file.close()
         self.loss_file.close()
         self.para_file.close()
