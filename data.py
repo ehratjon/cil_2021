@@ -132,7 +132,7 @@ class RoadSatelliteModule(pl.LightningDataModule):
     
     def augmentations(self, img, mask):
         img = self.get_patches_averages_rgb(img)
-        mask = self.get_patches_averages_rgb(mask)
+        mask = self.get_patches_averages_rgb(mask, True)
 
         return img, mask
 
@@ -146,15 +146,19 @@ class RoadSatelliteModule(pl.LightningDataModule):
         return imgs_crop[chosen_index], masks_crop[chosen_index]
 
     def get_patches_from_image(self, img):
-        size = 16
-        stride = 16 
+        size = 5
+        stride = 5
         patches = img.unfold(1, size, stride).unfold(2, size, stride)
         
         return patches
 
-    def get_patches_averages_rgb(self, img):
+    def get_patches_averages_rgb(self, img, is_mask=False):
         patches = self.get_patches_from_image(img)
         
         patches_avg = patches.float().mean((3, 4))
         
+        if is_mask:
+            patches_avg[patches_avg > 0.25] = 1.0
+            
         return patches_avg.byte()
+        

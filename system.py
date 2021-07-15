@@ -5,6 +5,14 @@ import torchmetrics as tm
 
 import pytorch_lightning as pl
 
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+
+import torchvision
+import torchvision.transforms.functional as F
+from torchvision.utils import draw_segmentation_masks
+
 class SemanticSegmentationSystem(pl.LightningModule):
     def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, lr: float = 1e-3, batch_size: int = 80):
         super().__init__()
@@ -58,7 +66,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
     def visualize_results(self):
         Xs, ys = next(iter(self.val_dataloader()))
                 
-        y_preds = torch.sigmoid(self.model(X.float().cuda()))
+        y_preds = torch.sigmoid(self.model(Xs.float().cuda()))
         
         for y_pred in y_preds:
             show_image(y_pred)
@@ -69,7 +77,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
                 
         y_preds = torch.sigmoid(self.model(Xs.float().cuda()))
         
-        imgs_masks_zip = list(zip(Xs, y))
+        imgs_masks_zip = list(zip(Xs, ys))
         seg_imgs_masks = [draw_segmentation_masks(train_pair[0], train_pair[1].bool(), colors=['#FF0000']) for train_pair in imgs_masks_zip]
         
         pred_zip = list(zip(seg_imgs_masks, y_preds))
@@ -77,9 +85,6 @@ class SemanticSegmentationSystem(pl.LightningModule):
         
         for i, seg_image in enumerate(seg_imgs_pred):
             show_image(seg_image)
-            
-            if i >= num_images:
-                return
             
     def train_dataloader(self):
         return self.datamodule.train_dataloader()
@@ -118,3 +123,13 @@ class DiceLoss(nn.Module):
         dice = (2.*intersection + smooth)/(inputs.sum() + targets.sum() + smooth)  
         
         return 1 - dice
+    
+def show_image(imgs):
+    if not isinstance(imgs, list):
+        imgs = [imgs]
+    fix, axs = plt.subplots(ncols=len(imgs), squeeze=False)
+    for i, img in enumerate(imgs):
+        img = img.detach()
+        img = F.to_pil_image(img)
+        axs[0, i].imshow(np.asarray(img))
+        axs[0, i].set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
