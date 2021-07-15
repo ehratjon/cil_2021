@@ -75,9 +75,7 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # set up datawriter
-    dw = datawriter()
-    dw.write_info("Using {} device".format(device))
-    dw.write_hyperparameters(hyperparameters)
+    dw = datawriter(device, hyperparameters)
     
     # set up dataloaders
     train_dataloader, eval_dataloader = dataloader.get_dataloader(hyperparameters)
@@ -85,8 +83,7 @@ def main():
     # choose model
     load_model = hyperparameters["load_model"] and os.path.exists("model.pth")
     model = torch.load('model.pth').to(device) if load_model else simple_models.OneNodeModel().to(device)
-    dw.write_info("Model loaded from 'model.pth' = {}".format(load_model))
-    dw.set_model(model)
+    dw.set_model(model, load_model)
     
     # choose loss function
     loss_fn = torch.nn.MSELoss()

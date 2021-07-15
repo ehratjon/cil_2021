@@ -3,7 +3,7 @@ import os
 class datawriter():
 
 
-    def __init__(self, store_path = "results/"):
+    def __init__(self, device="device not known", hyperparameters={}, store_path = "results/"):
         id = 0
         while(os.path.exists(store_path + str(id) + "_info.txt")):
             id += 1
@@ -16,19 +16,23 @@ class datawriter():
         self.loss_file.write("Epoch, Avg Loss\n")
         self.para_file.write("Epoch, Params\n")
 
+        self.info_file.write("Using {} device. \n".format(device))
+        self.write_hyperparameters(hyperparameters)
+
     
     def write_hyperparameters(self, hyperparameters):
-        self.info_file.write("--- Hyperparameters: ---\n")
+        self.info_file.write("\n--- Hyperparameters: ---\n")
         for key, value in hyperparameters.items():
-            self.info_file.write(f"{key:<15}: {str(value):>15}\n")
+            self.info_file.write(f"{key:<20}: {str(value):>15}\n")
         self.info_file.write("--- END Hyperparameters ---\n")
 
 
-    def set_model(self, model):
+    def set_model(self, model, load_model):
         self.model = model
-        self.info_file.write("Model used: {}\n".format(model))
+        self.info_file.write("\nModel used: {}\n".format(model))
+        self.info_file.write("Model loaded from 'model.pth' = {} \n".format(load_model))
 
-        self.info_file.write("--- Parameters: ---\n")
+        self.info_file.write("\n--- Parameters: ---\n")
         for name, param in model.named_parameters():
             self.info_file.write(f"{name:<15}: {str(param):>15}\n")
         self.info_file.write("--- END Parameters ---\n")
