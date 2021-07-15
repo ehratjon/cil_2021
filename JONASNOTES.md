@@ -140,6 +140,9 @@
   - use window size of 400x400 pixels
     - no postprocessing for training
     - take best of 4 for test images
+  - predict only patches and neural network only looks at a patch
+- try to fit a lot of lines (or segments, especially for curved roads) as post processing
+- try to enforce conectivity of roads
 
 ## Sources
 
