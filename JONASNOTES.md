@@ -83,6 +83,7 @@
     works with only tensor operations
 - write more intuitive model with grad, since testing with no grad is difficult
   - only one node
+- focus more on pre and postprocessing
 - write test cases for new model and better visualizations to get a glimpse of things
 - remove test.py and include these things in train.py
 - go through train.py again and check if the code makes sense
@@ -144,6 +145,11 @@
 - try to fit a lot of lines (or segments, especially for curved roads) as post processing
 - try to enforce conectivity of roads
 - find nets for cars and houses to substract from images (or for cars, differentiate between parking and road)
+  - https://arxiv.org/pdf/1805.10485.pdf
+  - probably not usable: (https://arxiv.org/pdf/2106.07228.pdf , http://cs231n.stanford.edu/reports/2016/pdfs/280_Report.pdf)
+- be more patchy
+  - higher blur
+  - only work with patches
 
 ## Sources
 
