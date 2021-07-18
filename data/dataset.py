@@ -305,6 +305,7 @@ class ToFloatTensor(object):
 
 
 # NOTE: Does nothing currently
+# SEE: https://stats.stackexchange.com/questions/70553/
 class Normalize(object):
     """
     Normalize dataset that was not transformed before.
@@ -327,7 +328,6 @@ class Normalize(object):
       - set the std deviation of all images to one 
         (not used, as then all pictures would be close to black)
     """
-
     def __init__(self, dataset):
         # compute mean and variance of dataset
         data_size = len(dataset)
