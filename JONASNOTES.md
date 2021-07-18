@@ -79,7 +79,6 @@
 - before continuing with test cases start with new model
   - need to find out how loss function needs to work such that we optimize correclty
   - create one node model
-<<<<<<< HEAD
 - lightning files afoh
 - "schlechti" bilder usem dataset usenäh
   - die wo keini strosse druf hend????
@@ -87,9 +86,7 @@
 - google neural network to fix heatmaps
   - als zweits neurals netzwerk wo dheatmaps fixed
 - alli neural networks vom mike code übernäh
-=======
 - notebook project 3 vo exercises duregoh
->>>>>>> fa1675001237a2dd8bc456027cc5de85321c8fc8
 - write test cases to test every component alone
   - really seems like convert_into_label_list_for_patches works strangely...
   - can be used to then compute torch.eq(a,b) to compute accuracy
