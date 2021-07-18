@@ -35,8 +35,8 @@ def test_dataset():
     image_tensor = sample["image"]
     ground_truth_tensor = sample["ground_truth"]
 
-    image_path = 'results/test_cases/temp_image.png'
-    groud_truth_path = 'results/test_cases/temp_ground_truth.png'
+    image_path = 'results/temp_image.png'
+    groud_truth_path = 'results/temp_ground_truth.png'
 
     image_as_array = image_tensor.numpy()
     image_as_array = image_as_array.transpose((1, 2, 0))
@@ -97,7 +97,6 @@ def test_loss_function():
     print(loss1.item())
     print(loss2.item())
         
-
 
 # goes through all tests (new ones need to be added manually)
 def test_all():

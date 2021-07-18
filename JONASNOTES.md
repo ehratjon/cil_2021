@@ -58,17 +58,28 @@
 - ~~find out why gradient not working~~
 - ~~print all params with values + grads~~
   - ~~#for name, param in model.named_parameters():~~
-    ~~#print(name, param.data, param.grad)~~
-    ~~#print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")~~
-    ~~#print(model.weights.grad)~~
-    ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
+  - ~~#print(name, param.data, param.grad)~~
+  - ~~#print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")~~
+  - ~~#print(model.weights.grad)~~
+  - ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
   - make it print multiple eval images by giving it as arugment
+- ~~eigeni dataloader file~~
+- help mike
+  - normalize transformer for dataset
+  - find mean and st. deviation vom ganze dateset usefinde
+  - szweite netz schriebe wo predicted nimmt und sie versuecht zfixe
+  - write everything as tools that can be used by mike
+  - baselines ??? u-net, spatial u-net, sd u-net etc. (patch only prediction, black)
+  - pyramid vs. up-conv in unets
+  - eigeni loss function mit die vom mike vergliche uf sim model
 - reintroduce correct loss functions
   - make sure to test it out completely!!!!
+  - mini loss function isch nit e loss funciton will nit differentiable
 - make sure loss functions work with batches and not with single sample
 - before continuing with test cases start with new model
   - need to find out how loss function needs to work such that we optimize correclty
   - create one node model
+<<<<<<< HEAD
 - lightning files afoh
 - "schlechti" bilder usem dataset usenäh
   - die wo keini strosse druf hend????
@@ -76,6 +87,9 @@
 - google neural network to fix heatmaps
   - als zweits neurals netzwerk wo dheatmaps fixed
 - alli neural networks vom mike code übernäh
+=======
+- notebook project 3 vo exercises duregoh
+>>>>>>> fa1675001237a2dd8bc456027cc5de85321c8fc8
 - write test cases to test every component alone
   - really seems like convert_into_label_list_for_patches works strangely...
   - can be used to then compute torch.eq(a,b) to compute accuracy
@@ -84,6 +98,10 @@
     works with only tensor operations
 - write more intuitive model with grad, since testing with no grad is difficult
   - only one node
+- focus more on pre and postprocessing
+- batch size, learning rate etc. is set automatically in pytorch ligtning. 
+  - how to optimize in pytorch without lightning or change to lightning
+  - what hyperparameters need to be optimized ???
 - write test cases for new model and better visualizations to get a glimpse of things
 - remove test.py and include these things in train.py
 - go through train.py again and check if the code makes sense
@@ -113,6 +131,7 @@
   - go through other tutorials to add more visualization or simplicity etc...
     - like https://pytorch.org/tutorials/beginner/basics/intro.html
 - Find novel solution
+  - look at ideas
   - debug
   - optimise to data 
   - how to handle that training images = 400x400pixels and test images = 608x608?
@@ -140,6 +159,15 @@
   - use window size of 400x400 pixels
     - no postprocessing for training
     - take best of 4 for test images
+  - predict only patches and neural network only looks at a patch
+- try to fit a lot of lines (or segments, especially for curved roads) as post processing
+- try to enforce conectivity of roads
+- find nets for cars and houses to substract from images (or for cars, differentiate between parking and road)
+  - https://arxiv.org/pdf/1805.10485.pdf
+  - probably not usable: (https://arxiv.org/pdf/2106.07228.pdf , http://cs231n.stanford.edu/reports/2016/pdfs/280_Report.pdf)
+- be more patchy
+  - higher blur
+  - only work with patches
 
 ## Sources
 

@@ -1,25 +1,24 @@
 import sys
 import os
-
 import numpy as np
 import torch
-import random
 
-from torch.utils.data import DataLoader
-from torchvision import transforms
 
 # all code files used are stored in a tools folder
 # this allows us to directly import those files
 sys.path.append("cil_data")
+sys.path.append("data")
 sys.path.append("models")
 sys.path.append("tools")
 
+
 # import of local files
-import data
+import dataloader
 import simple_models
 import loss_functions
 import reproducible
 from datawriter import datawriter
+
 
 # specify hyperparameters
 hyperparameters = {
@@ -32,40 +31,12 @@ hyperparameters = {
     "reproducible": True,
     "load_model": False,
     "store_model": True,
+    # choose if params are being stored in results file
+    "write_params": True,
 }
 
+
 if(hyperparameters["reproducible"]): reproducible.set_deterministic()
-
-
-"""
-Returns dataloader for training and evaluating model
-"""
-def get_dataloader():
-    # specify transforms you want for your data:
-    data_transform = transforms.Compose([
-        # we want our data to be stored as tensors
-        data.ToFloatTensor()
-    ])
-
-    # specify dataset
-    dataset = data.RoadSegmentationDataset(transform=data_transform)
-    dataset_size = len(dataset) # size of dataset needed to compute split
-    train_split_size = int(dataset_size * hyperparameters["train_eval_ratio"])
-    # split dataset in training and evaluation sets
-    train_dataset, eval_dataset = torch.utils.data.random_split(dataset, 
-        [train_split_size, dataset_size - train_split_size])
-
-    # initiate dataloader for training and evaluation datasets
-    train_dataloader = DataLoader(train_dataset, 
-        batch_size=hyperparameters["batch_size"], shuffle=hyperparameters["shuffle"], 
-        worker_init_fn=reproducible.seed_worker if hyperparameters["reproducible"] else None, 
-        generator=reproducible.g if hyperparameters["reproducible"] else None)
-    eval_dataloader = DataLoader(eval_dataset, 
-        batch_size=1, shuffle=hyperparameters["shuffle"], 
-        worker_init_fn=reproducible.seed_worker if hyperparameters["reproducible"] else None, 
-        generator=reproducible.g if hyperparameters["reproducible"] else None)
-
-    return train_dataloader, eval_dataloader
 
 
 """
@@ -106,18 +77,15 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # set up datawriter
-    dw = datawriter()
-    dw.write_info("Using {} device".format(device))
-    dw.write_hyperparameters(hyperparameters)
+    dw = datawriter(device, hyperparameters)
     
     # set up dataloaders
-    train_dataloader, eval_dataloader = get_dataloader()
+    train_dataloader, eval_dataloader = dataloader.get_dataloader(hyperparameters)
     
     # choose model
     load_model = hyperparameters["load_model"] and os.path.exists("model.pth")
     model = torch.load('model.pth').to(device) if load_model else simple_models.OneNodeModel().to(device)
-    dw.write_info("Model loaded from 'model.pth' = {}".format(load_model))
-    dw.set_model(model)
+    dw.set_model(model, load_model)
     
     # choose loss function
     loss_fn = torch.nn.MSELoss()
@@ -132,6 +100,7 @@ def main():
     
     # stores model such that it can be reloaded later
     if(hyperparameters["store_model"]): torch.save(model, 'model.pth')
+    dw.close()
 
 
 if __name__ == "__main__":
