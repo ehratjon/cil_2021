@@ -1,7 +1,9 @@
 import os
+import statistics
 
 from skimage import io, transform, img_as_float, img_as_ubyte
 import cv2
+import numpy as np
 
 import torch
 from torch.utils.data import Dataset
@@ -302,22 +304,54 @@ class ToFloatTensor(object):
                 'original_id': sample['original_id']}
 
 
+# NOTE: Does nothing currently
 class Normalize(object):
-    """Normalize dataset that was not transformed before."""
-    
-    def __init__(dataset):
+    """
+    Normalize dataset that was not transformed before.
+    After careful consideration, standart score seems to be
+    the best option but it is clear that such adaptes won't
+    look similar to the original images
+    Different vairants:
+    - use np.linalg.norm(images) and divide by norm
+    - standart score for our purpose
+      - x = x - mean
+      - does not work as we dont want negative values
+    - min max feature scaling
+      - x = (x - x_min) / (x_max - x_min)
+    - standart score
+      - x = (x - mean) / std_deviation
+      - makes everything look dark
+    - fully normalize pictures
+      - subtract mean of all data from the mean of the picture
+        ...????
+      - set the std deviation of all images to one 
+        (not used, as then all pictures would be close to black)
+    """
+
+    def __init__(self, dataset):
         # compute mean and variance of dataset
         data_size = len(dataset)
 
         images = []
-        ground_truth = []
         for i in range(data_size):
-            images.append[dataset[i]["image"]]
-            ground_truth.append[dataset[i]["ground_truth"]]
+            images.append(dataset[i]["image"])
 
-        
-        print("not implemented")
+        images = np.array(images).squeeze()
+
+        self.image_mean = np.mean(images) # should be around 80
+        self.image_variance = np.var(images) # should be around 2500
+        self.std_dev = np.sqrt(self.image_variance)
+        self.norm = np.linalg.norm(images) # should be around 650000
+
 
     # use data_tools to compute mean and variance
+    """
     def __call__(self, sample):
-        print("not implemented")
+        return {'image': torch.from_numpy(sample["image"].numpy() / self.norm),
+                'ground_truth': sample["ground_truth"],
+                'original_id': sample['original_id']}
+    """
+    def __call__(self, sample):
+        return {'image': sample["image"],
+                'ground_truth': sample["ground_truth"],
+                'original_id': sample['original_id']}

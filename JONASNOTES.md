@@ -105,6 +105,7 @@
 - we want our predictions to be between 0 and 1. make sure that is the case
   - with 0.25 being the threshhold
 - first research: What do you need to make a first submission (do while coding)
+- try again to normalize data
 - Make a notebook that loads,trains,tests and submits code
 - "implement baseline"
   - choose a good simplest model for first baseline

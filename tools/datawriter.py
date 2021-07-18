@@ -65,11 +65,11 @@ class datawriter():
             images = eval["sample"]["image"]
             predictions = eval["prediction"]
             ground_truth = eval["sample"]["ground_truth"]
-            
+
             batch_size = len(images)
 
             for i in range(batch_size):
-                f = open(curr_image_path + str(eval["sampel"]["original_id"][i] + ".txt"))
+                f = open(curr_image_path + str(eval["sample"]["original_id"][i].item()) + ".txt", "w")
                 f.close()
                 data_tools.store_tensor_as_image(images[i], curr_image_path + str(i) + "_image")
                 data_tools.store_tensor_as_image(predictions[i], curr_image_path + str(i) + "_prediction")
