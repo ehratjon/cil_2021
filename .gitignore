@@ -7,6 +7,7 @@ cil-road-segmentation-2021.zip
 model.pth
 temp_*
 results/
+clean.sh
 
 .ipynb_*
 .vscode

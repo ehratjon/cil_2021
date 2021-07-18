@@ -31,8 +31,9 @@ hyperparameters = {
     "reproducible": True,
     "load_model": False,
     "store_model": True,
-    # choose if params are being stored in results file
+    # choose if params/images are being stored in results file
     "write_params": True,
+    "write_images": True,
 }
 
 
@@ -95,6 +96,7 @@ def main():
 
     # train
     for epoch in range(hyperparameters["epochs"]):
+        print(f"Epoch {epoch:>4d} out of {hyperparameters['epochs']:>4d}")
         train(train_dataloader, model, loss_fn, optimizer)
         dw.write_eval(epoch, evaluate(eval_dataloader, model, loss_fn))
     

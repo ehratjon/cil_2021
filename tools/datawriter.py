@@ -1,5 +1,6 @@
 import os
 
+import data_tools
 
 class datawriter():
 
@@ -10,13 +11,14 @@ class datawriter():
             id += 1
 
         self.write_params = hyperparameters["write_params"]
+        self.write_images = hyperparameters["write_images"]
 
         self.loss_file = open(store_path + str(id) + "_loss.csv", "w")
         self.info_file = open(store_path + str(id) + "_info.txt", "w")
         if(self.write_params): self.para_file = open(store_path + str(id) + "_para.csv", "w")
-
-        self.image_path = store_path + str(id) + "_images/"
-        os.mkdir(self.image_path)
+        if(self.write_images):
+            self.image_path = store_path + str(id) + "_images/"
+            os.mkdir(self.image_path)
 
         self.info_file.write("Try: {} \n".format(id))
         self.loss_file.write("Epoch, Avg Loss\n")
@@ -56,7 +58,20 @@ class datawriter():
                 "\t", "").replace(",", " / ").replace("  ","")
             self.para_file.write(str(epoch) + ", " + "(" + params_string + ")" + "\n")
         
-        #TODO store images....
+        if(self.write_images):
+            curr_image_path = self.image_path + str(epoch) + "_epoch/"
+            os.mkdir(curr_image_path)
+            
+            images = eval["sample"]["image"]
+            predictions = eval["prediction"]
+            ground_truth = eval["sample"]["ground_truth"]
+            
+            batch_size = len(images)
+
+            for i in range(batch_size):
+                data_tools.store_tensor_as_image(images[i], curr_image_path + str(i) + "_image")
+                data_tools.store_tensor_as_image(predictions[i], curr_image_path + str(i) + "_prediction")
+                data_tools.store_tensor_as_image(ground_truth[i], curr_image_path + str(i) + "_ground_truth")
 
 
     def write_info(self, string):
