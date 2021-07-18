@@ -13,14 +13,18 @@ import reproducible
 Returns dataloader for training and evaluating model
 """
 def get_dataloader(hyperparameters):
+    # specify dataset
+    dataset = ds.RoadSegmentationDataset()
+
     # specify transforms you want for your data:
     data_transform = transforms.Compose([
         # we want our data to be stored as tensors
-        ds.ToFloatTensor()
+        ds.ToFloatTensor(),
+        ds.Normalize(dataset),
     ])
 
-    # specify dataset
-    dataset = ds.RoadSegmentationDataset(transform=data_transform)
+    dataset.set_transforms(data_transform)
+
     dataset_size = len(dataset) # size of dataset needed to compute split
     train_split_size = int(dataset_size * hyperparameters["train_eval_ratio"])
     # split dataset in training and evaluation sets

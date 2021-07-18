@@ -62,7 +62,7 @@
   - ~~#print(f"weights {model.weights[0][0]:>5f}, {model.weights[1][0]:>5f}, {model.weights[2][0]:>5f}")~~
   - ~~#print(model.weights.grad)~~
   - ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
-  - make it print multiple eval images by giving it as arugment
+  - ~~make it print multiple eval images by giving it as arugment~~
 - ~~eigeni dataloader file~~
 - help mike
   - normalize transformer for dataset

@@ -73,9 +73,15 @@ class RoadSegmentationDataset(Dataset):
 
         self.path_training_images       = os.path.join(root_dir, "training/training/images/")
         self.path_training_groundtruth  = os.path.join(root_dir, "training/training/groundtruth/")
+    
 
     def __len__(self):
         return len(os.listdir(self.path_training_images))
+
+
+    def set_transforms(self, transforms):
+        self.transform = transforms
+
 
     """
     First available item has id 0 (this is necessary for the dataloader to work)
@@ -121,8 +127,14 @@ class RoadSegmentationTestDataset(Dataset):
 
         self.path_test_images = os.path.join(root_dir, "test_images/test_images/")
 
+
     def __len__(self):
         return len(os.listdir(self.path_test_images))
+
+
+    def set_transforms(self, transforms):
+        self.transform = transforms
+
 
     """
     First available item has id 0
@@ -259,7 +271,7 @@ class RandomCrop(object):
 
 
 class ToTensor(object):
-    """Convert ndarrays in sample to Tensors."""
+    """Convert samples to Tensors."""
 
     def __call__(self, sample):
         image, ground_truth = sample['image'], sample['ground_truth']
@@ -275,7 +287,7 @@ class ToTensor(object):
 
 
 class ToFloatTensor(object):
-    """Convert ndarrays in sample to Tensors."""
+    """Convert samples to float Tensors."""
 
     def __call__(self, sample):
         image, ground_truth = sample['image'], sample['ground_truth']
@@ -288,3 +300,24 @@ class ToFloatTensor(object):
         return {'image': torch.from_numpy(image).float(),
                 'ground_truth': torch.from_numpy(ground_truth).float(),
                 'original_id': sample['original_id']}
+
+
+class Normalize(object):
+    """Normalize dataset that was not transformed before."""
+    
+    def __init__(dataset):
+        # compute mean and variance of dataset
+        data_size = len(dataset)
+
+        images = []
+        ground_truth = []
+        for i in range(data_size):
+            images.append[dataset[i]["image"]]
+            ground_truth.append[dataset[i]["ground_truth"]]
+
+        
+        print("not implemented")
+
+    # use data_tools to compute mean and variance
+    def __call__(self, sample):
+        print("not implemented")

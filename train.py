@@ -32,6 +32,9 @@ hyperparameters = {
     "load_model": False,
     "store_model": True,
     # choose if params/images are being stored in results file
+    # these parameters are given to datawriter.py
+    # info: stores all parameters in csv files
+    # info: stores last batch of evaluation images for each epoch
     "write_params": True,
     "write_images": True,
 }
