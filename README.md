@@ -32,7 +32,9 @@ All notebooks are in the main folder. All code files (but `test.py`) are in eith
 - the `models` folder if they represent an ml model
 - the `tools` folder if none of the above apply  
 
-Originally, everything was coded in torch. All lightning files ar suffixed with `_l`. 
+Originally, everything was coded in torch. 
+All lightning files are suffixed with `_l`.
+All lightning files copied from Mike/Jonathan are  suffixed with `_l2`.
 
 All sources used to write the code can be collected in:  
 `SOURCES.md`

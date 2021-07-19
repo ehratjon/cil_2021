@@ -177,6 +177,8 @@ X
 - be more patchy
   - higher blur
   - only work with patches
+- smarter patching
+  - https://www.tu-chemnitz.de/etit/proaut/en/research/superpixel.html
 
 ## Sources
 
