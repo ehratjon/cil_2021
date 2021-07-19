@@ -8,6 +8,10 @@ sys.path.append("../tools")
 import dataset as ds
 import reproducible
 
+"""
+NOTE: Better create a fully dataloader class next time 
+instead of just methods
+"""
 
 """
 Returns dataloader for training and evaluating model

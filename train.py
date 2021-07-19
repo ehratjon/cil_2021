@@ -45,6 +45,8 @@ if(hyperparameters["reproducible"]): reproducible.set_deterministic()
 
 """
 trains the model using one optimizer step for each batch in the dataloader
+NOTE: train and evaluate function could have been included in a seperate class
+for reusability
 """
 def train(dataloader, model, loss_fn, optimizer):
     for _, sample in enumerate(dataloader):

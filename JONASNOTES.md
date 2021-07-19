@@ -6,8 +6,16 @@
 - Write some summary of the lecture notes here
 - Stonks
 
+## Lectures Watched
+12345678901234
+XXXX
+
+## Exercises solved
+12345678901234
+X
+
 ## Exam
-- Mi 11.08.	15:30-17:30	263-0008-00S Computational Intelligence Lab
+- Mi 11.08.	15:30-17:30	263-0008-00S Computational Intelligence Lab HIL F 41
 - The written exam takes 120 minutes. The language of examination is English. NO WRITTEN AIDS ALLOWED.
 
 ## Sources
@@ -64,9 +72,11 @@
   - ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
   - ~~make it print multiple eval images by giving it as arugment~~
 - ~~eigeni dataloader file~~
+- move to pytorch lightning
 - help mike
-  - normalize transformer for dataset
-  - find mean and st. deviation vom ganze dateset usefinde
+  - ~~normalize transformer for dataset~~
+  - ~~find mean and st. deviation vom ganze dateset usefinde~~
+  - go through https://deeplizard.com/learn/video/lu7TCu7HeYc to normalize data
   - szweite netz schriebe wo predicted nimmt und sie versuecht zfixe
   - write everything as tools that can be used by mike
   - baselines ??? u-net, spatial u-net, sd u-net etc. (patch only prediction, black)
