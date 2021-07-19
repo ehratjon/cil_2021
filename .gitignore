@@ -8,6 +8,7 @@ model.pth
 temp_*
 results/
 clean.sh
+lightning_logs/
 
 .ipynb_*
 .vscode
