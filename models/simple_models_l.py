@@ -2,7 +2,6 @@ import torch
 from torch import nn
 import pytorch_lightning as pl
 
-from train_l import hyperparameters
 
 """
 For lightning modules, use pl.LightningModule instead of nn.Module
@@ -28,11 +27,13 @@ one node module with one weight per channel
 - finish with relu
 """
 class OneNodeModel(pl.LightningModule):
-    def __init__(self):
+    def __init__(self, hyperparameters):
         super(OneNodeModel, self).__init__()
+        self.hyperparameters = hyperparameters
         # define single weight
         self.weights = torch.nn.Parameter(torch.randn((3, 1), dtype=torch.float, requires_grad=True))
         self.relu = torch.nn.ReLU()
+
 
     # defines forward pass (never call yourself)
     def forward(self, x):
@@ -49,7 +50,7 @@ class OneNodeModel(pl.LightningModule):
     def configure_optimizers(self):
         self.loss_fn = torch.nn.MSELoss()
         optimizer = torch.optim.Adam(self.parameters(), 
-            hyperparameters["learning_rate"])
+            self.hyperparameters["learning_rate"])
         return optimizer
 
 
@@ -57,11 +58,11 @@ class OneNodeModel(pl.LightningModule):
         image = train_batch["image"]
         pred = self.forward(image)
         loss = self.loss_fn(pred, train_batch["ground_truth"])
-        self.log('train_loss', loss)
+        return loss
 
     
     def validation_step(self, eval_batch, batch_idx):
         image = eval_batch["image"]
         pred = self.forward(image)
         loss = self.loss_fn(pred, eval_batch["ground_truth"])
-        self.log('val_loss', loss)
+        return loss

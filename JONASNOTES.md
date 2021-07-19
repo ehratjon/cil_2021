@@ -72,7 +72,8 @@ X
   - ~~print(f"batch number: {batch_number:>3d} loss for this batch: {loss.item():>7f}")~~
   - ~~make it print multiple eval images by giving it as arugment~~
 - ~~eigeni dataloader file~~
-- move to pytorch lightning
+- ~~move to pytorch lightning~~
+- move mikes code into my files
 - help mike
   - ~~normalize transformer for dataset~~
   - ~~find mean and st. deviation vom ganze dateset usefinde~~
