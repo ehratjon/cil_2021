@@ -1,7 +1,7 @@
 from data import RoadSatelliteModule
-from system import SemanticSegmentationSystem
-from model import NestedUNet
-from model import UNet
+from system_l2 import SemanticSegmentationSystem
+from model_l2 import NestedUNet
+from model_l2 import UNet
 
 import numpy as np
 import matplotlib.pyplot as plt
