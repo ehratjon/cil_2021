@@ -76,96 +76,112 @@ X
 - ~~move mikes code into my files~~
   - ~~change you data files to fit with his folder structure~~
   - ~~didnt change folder structure, only copeied both~~
-- help mike
+- ~~help mike~~
   - ~~normalize transformer for dataset~~
   - ~~find mean and st. deviation vom ganze dateset usefinde~~
-  - go through https://deeplizard.com/learn/video/lu7TCu7HeYc to normalize data
-  - szweite netz schriebe wo predicted nimmt und sie versuecht zfixe
-  - write everything as tools that can be used by mike
-  - baselines ??? u-net, spatial u-net, sd u-net etc. (patch only prediction, black)
-  - pyramid vs. up-conv in unets
-  - eigeni loss function mit die vom mike vergliche uf sim model
-- reintroduce correct loss functions
-  - make sure to test it out completely!!!!
-  - mini loss function isch nit e loss funciton will nit differentiable
-- make sure loss functions work with batches and not with single sample
-- before continuing with test cases start with new model
-  - need to find out how loss function needs to work such that we optimize correclty
-  - create one node model
-- lightning files afoh
-- "schlechti" bilder usem dataset usenäh
-  - die wo keini strosse druf hend????
-  - colouring anderst mache bi wasser
-- google neural network to fix heatmaps
-  - als zweits neurals netzwerk wo dheatmaps fixed
-- alli neural networks vom mike code übernäh
-- notebook project 3 vo exercises duregoh
-- write test cases to test every component alone
-  - really seems like convert_into_label_list_for_patches works strangely...
-  - can be used to then compute torch.eq(a,b) to compute accuracy
-  - can be used to simplify the loss function
-  - leave old loss function alone and try to write a new one that is simpler and 
-    works with only tensor operations
-- write more intuitive model with grad, since testing with no grad is difficult
-  - only one node
-- focus more on pre and postprocessing
-- batch size, learning rate etc. is set automatically in pytorch ligtning. 
-  - how to optimize in pytorch without lightning or change to lightning
-  - what hyperparameters need to be optimized ???
-- write test cases for new model and better visualizations to get a glimpse of things
-- remove test.py and include these things in train.py
-- go through train.py again and check if the code makes sense
-- we want our predictions to be between 0 and 1. make sure that is the case
-  - with 0.25 being the threshhold
-- first research: What do you need to make a first submission (do while coding)
-- try again to normalize data
-- Make a notebook that loads,trains,tests and submits code
-- "implement baseline"
-  - choose a good simplest model for first baseline
-  - explain why this model
-- write model testing
-- jonathans files und nommol mikes files inekopiere
-- use `kaggle competitions submit -c cil-road-segmentation-2021 -f submission.csv -m "Message"`
-- look at mask_to_submission.py and submission_to_mask.py
-- write submission
-- submit project
-- Change from pytorch to pytorch lightning
-- Comment everything
-- More Research
-  - Understand submission format, maybe can adapt evaluation to that
-    - read make_submission code
-    - don't quite understand: A simple baseline is to partition an image into a set of patches and classify every patch according to some simple features (average intensity). Although this can produce reasonable results for simple images, natural images typically require more complex procedures that reason abut the entire image or very large windows. 
-    - patches are 16x16 pixels. maybe can be used to optimise (don't need to classify each pixel itself but rather each patch)
-    - TA wrote we can use https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html with average="samples" 
-  - Search for similar stuff online (spatial u-nets etc.)
-  - Read through lecture notes and try to improve
-  - Read through all piazza posts and try to improve
-  - go through other tutorials to add more visualization or simplicity etc...
-    - like https://pytorch.org/tutorials/beginner/basics/intro.html
-- Find novel solution
-  - look at ideas
-  - debug
-  - optimise to data 
-  - how to handle that training images = 400x400pixels and test images = 608x608?
-    - find out: looks like houses in training set are a bit larger than in the testing set, but could be also same size
-  - find other data augmentations than flip etc. 
-    - look at skimage.transform.___ might have some interesting warps etc.
-    - look at https://www.analyticsvidhya.com/blog/2019/09/9-powerful-tricks-for-working-image-data-skimage-python/
-- Find baselines
-  - You must compare your solution to at least two baseline algorithms. For the baselines, you can use the implementations you developed as part of the programming exercises or come up with your own relevant baselines.
-- Improve novel solution
-  - read https://docs.google.com/document/d/1T5EjTYempPQng1BecGolbLtN5LtCL_xwq2PmmM-mAJ0/edit again to see what might be missing
-  - use pytorch lightning instead of pytorch
-- Write report
-  - see https://docs.google.com/document/d/1T5EjTYempPQng1BecGolbLtN5LtCL_xwq2PmmM-mAJ0/edit to get an overview of what it needs to include
-  - additionally, it says in the file above we should receive a pdf on how to write papers
+  - ~~go through https://deeplizard.com/learn/video/lu7TCu7HeYc to normalize data~~
+  - ~~szweite netz schriebe wo predicted nimmt und sie versuecht zfixe~~
+  - ~~write everything as tools that can be used by mike~~
+  - ~~baselines ??? u-net, spatial u-net, sd u-net etc. (patch only prediction, black)~~
+  - ~~pyramid vs. up-conv in unets~~
+  - ~~eigeni loss function mit die vom mike vergliche uf sim model~~
+- ~~reintroduce correct loss functions~~
+  - ~~make sure to test it out completely!!!!~~
+  - ~~mini loss function isch nit e loss funciton will nit differentiable~~
+- ~~make sure loss functions work with batches and not with single sample~~
+- ~~before continuing with test cases start with new model~~
+  - ~~need to find out how loss function needs to work such that we optimize correclty~~
+  - ~~create one node model~~
+- ~~lightning files afoh~~
+- ~~google neural network to fix heatmaps~~
+  - ~~als zweits neurals netzwerk wo dheatmaps fixed~~
+  - ~~szweite netz schriebe wo predicted nimmt und sie versuecht zfixe~~
+- ~~baselines ??? u-net, spatial u-net, sd u-net etc. (patch only prediction, black)~~
+- ~~alli neural networks vom mike code übernäh~~
+- ~~notebook project 3 vo exercises duregoh https://colab.research.google.com/github/dalab/lecture_cil_public/blob/master/exercises/2021/Project_3.ipynb~~
+- ~~write test cases to test every component alone~~
+  - ~~really seems like convert_into_label_list_for_patches works strangely...~~
+  - ~~can be used to then compute torch.eq(a,b) to compute accuracy~~
+  - ~~can be used to simplify the loss function~~
+  - ~~leave old loss function alone and try to write a new one that is simpler and works with only tensor operations~~
+- ~~write more intuitive model with grad, since testing with no grad is difficult~~
+  - ~~only one node~~
+- ~~focus more on pre and postprocessing~~
+- ~~batch size, learning rate etc. is set automatically in pytorch ligtning. ~~
+  - ~~how to optimize in pytorch without lightning or change to lightning~~
+  - ~~what hyperparameters need to be optimized ???~~
+- ~~write test cases for new model and better visualizations to get a glimpse of things~~
+- ~~remove test.py and include these things in train.py~~
+- ~~go through train.py again and check if the code makes sense~~
+- ~~we want our predictions to be between 0 and 1. make sure that is the case~~
+  - ~~with 0.25 being the threshhold~~
+- ~~first research: What do you need to make a first submission (do while coding)~~
+- ~~try again to normalize data~~
+- ~~Make a notebook that loads,trains,tests and submits code~~
+- ~~"implement baseline"~~
+  - ~~choose a good simplest model for first baseline~~
+  - ~~explain why this model~~
+- ~~write model testing~~
+- ~~jonathans files und nommol mikes files inekopiere~~
+- ~~use `kaggle competitions submit -c cil-road-segmentation-2021 -f submission.csv -m "Message"`~~
+- ~~look at mask_to_submission.py and submission_to_mask.py~~
+- ~~write submission~~
+- ~~submit project~~
+- ~~Change from pytorch to pytorch lightning~~
+- ~~Comment everything~~
+- ~~szweite netz schriebe wo predicted nimmt und sie versuecht zfixe~~
+- ~~More Research~~
+  - ~~Understand submission format, maybe can adapt evaluation to that~~
+    - ~~read make_submission code~~
+    - ~~don't quite understand: A simple baseline is to partition an image into a set of patches and classify every patch according to some simple features (average intensity). Although this can produce reasonable results for simple images, natural images typically require more complex procedures that reason abut the entire image or very large windows. ~~
+    - ~~patches are 16x16 pixels. maybe can be used to optimise (don't need to classify each pixel itself but rather each patch)~~
+    - ~~TA wrote we can use https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html with average="samples" ~~
+  - ~~Search for similar stuff online (spatial u-nets etc.)~~
+  - ~~Read through lecture notes and try to improve~~
+  - ~~Read through all piazza posts and try to improve~~
+  - ~~go through other tutorials to add more visualization or simplicity etc...~~
+    - ~~like https://pytorch.org/tutorials/beginner/basics/intro.html~~
+- ~~Find novel solution~~
+  - ~~look at ideas~~
+  - ~~debug~~
+  - ~~optimise to data ~~
+  - ~~how to handle that training images = 400x400pixels and test images = 608x608?~~
+    - ~~find out: looks like houses in training set are a bit larger than in the testing set, but could be also same size~~
+  - ~~other data augmentations:~~
+    - ~~look at skimage.transform.___ might have some interesting warps etc.~~
+    - ~~look at https://www.analyticsvidhya.com/blog/2019/09/9-powerful-tricks-for-working-image-data-skimage-python/~~
+- ~~Find baselines~~
+  - ~~You must compare your solution to at least two baseline algorithms. For the baselines, you can use the implementations you developed as part of the programming exercises or come up with your own relevant baselines.~~
+- ~~Improve novel solution~~
+  - ~~read https://docs.google.com/document/d/1T5EjTYempPQng1BecGolbLtN5LtCL_xwq2PmmM-mAJ0/edit again to see what might be missing~~
+  - ~~use pytorch lightning instead of pytorch~~
+- ~~Write report~~
+  - ~~see https://docs.google.com/document/d/1T5EjTYempPQng1BecGolbLtN5LtCL_xwq2PmmM-mAJ0/edit to get an overview of what it needs to include~~
+  - ~~additionally, it says in the file above we should receive a pdf on how to write papers~~
+
+### Still todo
+- baselines schriebe u-net, spatial u-net, sd u-net etc. (patch only prediction, black)
+  - simple baselines can also be done in pytorch
+  - explain why these important
+- szweite netz schriebe wo predicted nimmt und sie versuecht zfixe
+- clean-up
+  - comment code
+  - make sure everything works fine
+  - go through all resources to check that we filled out everything (expecially the two doc files given that describe the project)
+- write report
 
 ## Pipeline
+
+### Comments from TA
+- don't quite understand: A simple baseline is to partition an image into a set of patches and classify every patch according to some simple features (average intensity). Although this can produce reasonable results for simple images, natural images typically require more complex procedures that reason abut the entire image or very large windows. 
+- patches are 16x16 pixels. maybe can be used to optimise (don't need to classify each pixel itself but rather each patch)
+- TA wrote we can use https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html with average="samples" 
 
 ### Ideas
 - how to handle that training images = 400x400pixels and test images = 608x608?
   - use window size of 16x16 pixels (like the patches)
     - postprocessing is needed
+    - find out: looks like houses in training set are a bit larger than in the testing set, but could be also same size
     - first neural network that computes to many roads on each patch
     - postprocessing removes all roads that do not align over different patches
   - use window size of 400x400 pixels
@@ -183,6 +199,13 @@ X
 - smarter patching
   - https://www.tu-chemnitz.de/etit/proaut/en/research/superpixel.html
 - preprocessing with: https://scikit-image.org/
+- patch loss function as validation metric???
+- "schlechti" bilder usem dataset usenäh
+  - die wo keini strosse druf hend????
+  - colouring anderst mache bi wasser
+- other data augmentations:
+  - look at skimage.transform.___ might have some interesting warps etc.~~
+  - look at https://www.analyticsvidhya.com/blog/2019/09/9-powerful-tricks-for-working-image-data-skimage-python/
 
 ## Sources
 
