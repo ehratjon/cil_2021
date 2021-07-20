@@ -43,4 +43,5 @@ All sources used to write the code can be collected in:
 If you install new packages with pip, add them to the requirements.txt:  
 `pip freeze > requirements.txt`
 
-
+## Comments
+It seems we decided to also upload the data in another folder structure.

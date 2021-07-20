@@ -74,6 +74,7 @@ X
 - ~~eigeni dataloader file~~
 - ~~move to pytorch lightning~~
 - move mikes code into my files
+  - change you data files to fit with his folder structure
 - help mike
   - ~~normalize transformer for dataset~~
   - ~~find mean and st. deviation vom ganze dateset usefinde~~
@@ -122,6 +123,7 @@ X
   - choose a good simplest model for first baseline
   - explain why this model
 - write model testing
+- jonathans files und nommol mikes files inekopiere
 - use `kaggle competitions submit -c cil-road-segmentation-2021 -f submission.csv -m "Message"`
 - look at mask_to_submission.py and submission_to_mask.py
 - write submission
@@ -179,6 +181,7 @@ X
   - only work with patches
 - smarter patching
   - https://www.tu-chemnitz.de/etit/proaut/en/research/superpixel.html
+- preprocessing with: https://scikit-image.org/
 
 ## Sources
 
