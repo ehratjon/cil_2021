@@ -176,6 +176,8 @@ X
 - don't quite understand: A simple baseline is to partition an image into a set of patches and classify every patch according to some simple features (average intensity). Although this can produce reasonable results for simple images, natural images typically require more complex procedures that reason abut the entire image or very large windows. 
 - patches are 16x16 pixels. maybe can be used to optimise (don't need to classify each pixel itself but rather each patch)
 - TA wrote we can use https://scikit-learn.org/stable/modules/generated/sklearn.metrics.f1_score.html with average="samples" 
+- project 3 nb: In this notebook we will assume for simplicity that a training and a test image cover areas of the same size, but we encourage the students to validate this assumption as it might not be correct.
+- project 3 nb: In this notebook we will first of all load and explore the data. Only then we will present 3 methods that will guide us through an essential recap of the literature. Note that these methods and are not optimized. They can be adapted and improved to be used as baselines, depending on their relevance to your approach.
 
 ### Ideas
 - how to handle that training images = 400x400pixels and test images = 608x608?
