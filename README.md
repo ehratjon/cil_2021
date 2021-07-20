@@ -34,7 +34,8 @@ All notebooks are in the main folder. All code files (but `test.py`) are in eith
 
 Originally, everything was coded in torch. 
 All lightning files are suffixed with `_l`.
-All lightning files copied from Mike/Jonathan are  suffixed with `_l2`.
+All lightning files copied from Mike/Jonathan are suffixed with `_l2`.
+All files I worked on afterwards to merge everything are suffixed with `_l3`.
 
 All sources used to write the code can be collected in:  
 `SOURCES.md`

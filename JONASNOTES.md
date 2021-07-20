@@ -73,8 +73,9 @@ X
   - ~~make it print multiple eval images by giving it as arugment~~
 - ~~eigeni dataloader file~~
 - ~~move to pytorch lightning~~
-- move mikes code into my files
-  - change you data files to fit with his folder structure
+- ~~move mikes code into my files~~
+  - ~~change you data files to fit with his folder structure~~
+  - ~~didnt change folder structure, only copeied both~~
 - help mike
   - ~~normalize transformer for dataset~~
   - ~~find mean and st. deviation vom ganze dateset usefinde~~
