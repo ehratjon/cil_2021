@@ -80,9 +80,14 @@ class SemanticSegmentationSystem(pl.LightningModule):
         return accuracy
     
     def test_step(self, batch, batch_idx):
-        X, _ = batch
+        X, name = batch
         
-        return self.model(X)
+        X = X.float()
+        
+        return (self(X), name)
+
+    def test_epoch_end(self, outputs):
+        self.test_results = outputs
     
     @torch.no_grad()
     def visualize_results(self):
@@ -106,10 +111,10 @@ class SemanticSegmentationSystem(pl.LightningModule):
             y_preds = torch.sigmoid(self.model_fix(y_preds))
         
         imgs_masks_zip = list(zip(Xs, ys))
-        seg_imgs_masks = [draw_segmentation_masks(train_pair[0], train_pair[1].bool(), colors=['#FF0000']) for train_pair in imgs_masks_zip]
+        seg_imgs_masks = [draw_segmentation_masks(train_pair[0], train_pair[1].bool(), alpha=0.6, colors=['#FF0000']) for train_pair in imgs_masks_zip]
         
         pred_zip = list(zip(seg_imgs_masks, y_preds))
-        seg_imgs_pred = [draw_segmentation_masks(train_pair[0], train_pair[1].round().bool(), colors=['#00ff00']) for train_pair in pred_zip]
+        seg_imgs_pred = [draw_segmentation_masks(train_pair[0], train_pair[1].round().bool(), alpha=0.6, colors=['#00ff00']) for train_pair in pred_zip]
         
         for i, seg_image in enumerate(seg_imgs_pred):
             show_image(seg_image)
@@ -125,7 +130,6 @@ class SemanticSegmentationSystem(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=4, verbose=2)
         scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 10, 2, 1e-6, verbose=2)
         
         return {

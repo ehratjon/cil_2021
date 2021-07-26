@@ -69,7 +69,11 @@ class RoadSatelliteModule(pl.LightningDataModule):
             
         self.train_zip = list(zip(self.train_images, self.train_masks))
         
-        self.test_images = self.read_images('test/', ImageReadMode.RGB)
+        test_files = [(x[0], x[2]) for x in os.walk('test/')]
+        self.file_names = test_files[0][1]
+        self.test_images = list()
+        for file_name in self.file_names:
+            self.test_images.append(read_image(str('test/' + file_name), ImageReadMode.RGB))
 
         self.transforms_img = T.Compose(
             [
@@ -79,6 +83,7 @@ class RoadSatelliteModule(pl.LightningDataModule):
             ]
         )
         
+        
     def setup(self, stage=None):
         train_length = int(len(self.train_zip) * 0.8)
         valid_length = len(self.train_zip) - train_length
@@ -87,9 +92,11 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
         self.train_dataset = RoadSatelliteSet(self.train_data, self.transforms_img, self.augmentations, self.randomAugmentations)
 
-        self.valid_dataset = RoadSatelliteSet(self.valid_data, self.transforms_img, self.augmentations)#, self.randomAugmentations)
+        self.valid_dataset = RoadSatelliteSet(self.valid_data, self.transforms_img, self.augmentations)
 
-        self.test_data = self.test_images
+        self.test_data = list(zip(self.test_images, self.file_names))
+        self.test_dataset = RoadSatelliteSet(self.test_data, self.transforms_img, self.test_augmentations)
+
     
     def read_images(self, data_dir, read_mode):
         return [read_image(data_dir + file, read_mode) for file in os.listdir(data_dir)]
@@ -114,7 +121,7 @@ class RoadSatelliteModule(pl.LightningDataModule):
     
     def test_dataloader(self):
         return DataLoader(
-            self.test_data, 
+            self.test_dataset, 
             num_workers=self.num_workers,
             batch_size=self.batch_size,
             shuffle=False,
@@ -122,9 +129,9 @@ class RoadSatelliteModule(pl.LightningDataModule):
         )
 
     def augmentations(self, img, mask, stage=None):
-        img_patches = self.split_image(img, kernel_size=320, stride=20)
-        mask_patches = self.split_image(mask, kernel_size=320, stride=20)
-                
+        img_patches = self.split_image(img, kernel_size=320, stride=40)
+        mask_patches = self.split_image(mask, kernel_size=320, stride=40)
+            
         index_chosen = random.randint(0, img_patches.shape[0] - 1)
         img, mask = img_patches[index_chosen], mask_patches[index_chosen]
                 
@@ -132,9 +139,22 @@ class RoadSatelliteModule(pl.LightningDataModule):
         img = self.get_patches_averages_rgb(img, size=size, stride=stride)
         mask = self.get_patches_averages_rgb(mask, is_mask=True, size=size, stride=stride)
         
-        img = self.merged_img_rag(img, num_components=1500, compactness=10, thresh=0.03)
+        img = self.merged_img_rag(img, num_components=2000, compactness=10, thresh=0.03)
 
         return img, mask
+
+    def test_augmentations(self, img, name):
+        img_patches = self.split_image(img, kernel_size=320, stride=80)
+                                
+        patches_avg = []
+        for patch in img_patches:
+            size=stride=2
+            patch = self.get_patches_averages_rgb(patch, size=size, stride=stride)
+            patch = self.merged_img_rag(patch, num_components=2000, compactness=10, thresh=0.03)
+            
+            patches_avg.append(patch)
+
+        return torch.stack(patches_avg), name
 
     def randomAugmentations(self, img, mask):    
         if random.random() > 0.5:
