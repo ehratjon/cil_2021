@@ -17,7 +17,7 @@ import pytorch_lightning as pl
 from skimage import data, segmentation, filters, color
 from skimage.future import graph
 
-from fast_slic.avx2 import SlicAvx2
+#from fast_slic.avx2 import SlicAvx2
 import cv2
 
 import matplotlib.pyplot as plt
@@ -77,9 +77,9 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
         self.transforms_img = T.Compose(
             [
-                T.RandomEqualize(p=1.0),
-                T.GaussianBlur(3, 5),
-                T.RandomAdjustSharpness(3, 1),
+                #T.RandomEqualize(p=1.0),
+                #T.GaussianBlur(3, 5),
+                #T.RandomAdjustSharpness(3, 1),
             ]
         )
         
@@ -143,7 +143,7 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
         return img, mask
 
-    def test_augmentations(self, img, name):
+    def test_augmentations(self, img, name):        
         img_patches = self.split_image(img, kernel_size=320, stride=80)
                                 
         patches_avg = []
@@ -172,6 +172,14 @@ class RoadSatelliteModule(pl.LightningDataModule):
             mask = TF.vflip(mask)
                         
         return img, mask
+    
+    def color_transform(self, img, lower=(0, 0, 0), upper= (60, 50, 200)):
+        x = cv2.cvtColor(img.permute(1, 2, 0).numpy(), cv2.COLOR_RGB2HSV)
+
+        mask = cv2.inRange(x, lower, upper)
+        result = cv2.bitwise_and(x, x, mask=mask)
+
+        return torch.from_numpy(cv2.cvtColor(result, cv2.COLOR_HSV2RGB)).permute(2, 0, 1) 
     
     def get_patches_from_image(self, img, size=5, stride=5):
         patches = img.unfold(1, size, stride).unfold(2, size, stride)
