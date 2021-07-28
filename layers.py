@@ -48,9 +48,9 @@ class unetConv2Spatial(nn.Module):
 
         return x
     
-class unetConv2Dialated(nn.Module):
+class unetConv2Dilated(nn.Module):
     def __init__(self, in_size, out_size, is_batchnorm, n=2, ks=3, stride=1, padding=1, upsample=False):
-        super(unetConv2Dialated, self).__init__()
+        super(unetConv2Dilated, self).__init__()
         self.n = n
         self.ks = ks
         self.stride = stride
@@ -226,7 +226,7 @@ class unetUp_origin(nn.Module):
         return self.conv(outputs0)
 
 # UNet(++)
-class dialated_spatial_block(nn.Module):
+class dilated_spatial_block(nn.Module):
     def __init__(self, in_c, out_c, upsample=False):
         super().__init__()
 
@@ -286,8 +286,8 @@ class dialated_spatial_block(nn.Module):
 
         return x
     
-class dialated_conv_block(nn.Module):
-    def __init__(self, in_c, out_c, upsample=False):
+class dilated_conv_block(nn.Module):
+    def __init__(self, in_c, out_c):
         super().__init__()
 
         self.conv = nn.Conv2d(in_c, out_c//2, kernel_size=3, padding=1)
@@ -345,8 +345,8 @@ class dialated_conv_block(nn.Module):
 
         return x
     
-class dialated_block(nn.Module):
-    def __init__(self, in_c, out_c, upsample=False):
+class dilated_block(nn.Module):
+    def __init__(self, in_c, out_c):
         super().__init__()
 
         self.conv = nn.Conv2d(in_c, out_c//2, kernel_size=3, padding=1)
