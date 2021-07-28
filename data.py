@@ -17,7 +17,7 @@ import pytorch_lightning as pl
 from skimage import data, segmentation, filters, color
 from skimage.future import graph
 
-#from fast_slic.avx2 import SlicAvx2
+from fast_slic.avx2 import SlicAvx2
 import cv2
 
 import matplotlib.pyplot as plt
@@ -77,9 +77,9 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
         self.transforms_img = T.Compose(
             [
-                #T.RandomEqualize(p=1.0),
-                #T.GaussianBlur(3, 5),
-                #T.RandomAdjustSharpness(3, 1),
+                T.RandomEqualize(p=1.0),
+                T.GaussianBlur(3, 5),
+                T.RandomAdjustSharpness(3, 1),
             ]
         )
         
