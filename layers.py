@@ -47,6 +47,100 @@ class unetConv2Spatial(nn.Module):
             x = conv(x)
 
         return x
+    
+class unetConv2Dialated(nn.Module):
+    def __init__(self, in_size, out_size, is_batchnorm, n=2, ks=3, stride=1, padding=1, upsample=False):
+        super(unetConv2Dialated, self).__init__()
+        self.n = n
+        self.ks = ks
+        self.stride = stride
+        self.padding = padding
+        s = stride
+        p = padding
+        
+        out_c = out_size
+        self.is_bn = is_batchnorm
+        
+        if is_batchnorm:
+            for i in range(1, n):
+                conv = nn.Sequential(nn.Conv2d(in_size, out_size, ks, s, p),
+                                     nn.BatchNorm2d(out_size),
+                                     nn.ReLU(inplace=True), )
+                setattr(self, 'conv%d' % i, conv)
+                in_size = out_size
+            
+            self.dial_conv1 = nn.Conv2d(out_c, out_c//2, kernel_size=3, padding=1)
+            self.bn1 = nn.BatchNorm2d(out_c//2)
+            
+            self.dial3 = nn.Conv2d(out_c//2, out_c//4, kernel_size=3, padding=3, dilation=3)
+            self.bn2_1 = nn.BatchNorm2d(out_c//4)
+
+            self.dial6 = nn.Conv2d(out_c//4, out_c//8, kernel_size=3, padding=6, dilation=6)
+            self.bn2_2 = nn.BatchNorm2d(out_c//8)
+
+            self.dial9 = nn.Conv2d(out_c//8, out_c//16, kernel_size=3, padding=9, dilation=9)
+            self.bn2_3 = nn.BatchNorm2d(out_c//16)
+
+            self.dial12 = nn.Conv2d(out_c//16, out_c//16, kernel_size=3, padding=12, dilation=12)
+            self.bn2_4 = nn.BatchNorm2d(out_c//16)
+            
+            self.dial_conv2 = nn.Conv2d(out_c, out_c, kernel_size=3, padding=1)
+            self.bn2 = nn.BatchNorm2d(out_c)        
+
+            self.relu = nn.ReLU()
+        
+            in_size = out_size
+
+        else:
+            for i in range(1, n + 1):
+                conv = nn.Sequential(nn.Conv2d(in_size, out_size, ks, s, p),
+                                     nn.ReLU(inplace=True), )
+                setattr(self, 'conv%d' % i, conv)
+                in_size = out_size
+
+        # initialise the blocks
+        for m in self.children():
+            init_weights(m, init_type='kaiming')
+
+    def forward(self, inputs):
+        x = inputs
+        if self.is_bn:
+            for i in range(1, self.n):
+                conv = getattr(self, 'conv%d' % i)
+                x = conv(x)
+            
+            x = self.dial_conv1(x)
+            x = self.bn1(x)
+            x = self.relu(x)
+        
+            z1=self.dial3(x)
+            z1=self.bn2_1(z1)
+            z1=self.relu(z1)
+
+            z2=self.dial6(z1)
+            z2=self.bn2_2(z2)
+            z2=self.relu(z2)
+
+            z3=self.dial9(z2)
+            z3=self.bn2_3(z3)
+            z3=self.relu(z3)
+
+            z4=self.dial12(z3)
+            z4=self.bn2_4(z4)
+            z4=self.relu(z4)
+        
+            z = torch.cat([x, z1, z2, z3, z4], 1)
+            
+            x = self.dial_conv2(z)
+            x = self.bn2(x)
+            x = self.relu(x)
+            
+        else:
+            for i in range(1, self.n + 1):
+                conv = getattr(self, 'conv%d' % i)
+                x = conv(x)
+
+        return x
 
 class unetConv2(nn.Module):
     def __init__(self, in_size, out_size, is_batchnorm, n=2, ks=3, stride=1, padding=1):
@@ -131,7 +225,179 @@ class unetUp_origin(nn.Module):
             outputs0 = torch.cat([outputs0, input[i]], 1)
         return self.conv(outputs0)
 
-# UNet++
+# UNet(++)
+class dialated_spatial_block(nn.Module):
+    def __init__(self, in_c, out_c, upsample=False):
+        super().__init__()
+
+        self.conv = nn.Conv2d(in_c, out_c//2, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(out_c//2)
+        
+        
+        self.dial3 = nn.Conv2d(out_c//2, out_c//4, kernel_size=3, padding=3, dilation=3)
+        self.bn2_1 = nn.BatchNorm2d(out_c//4)
+        
+        self.dial6 = nn.Conv2d(out_c//4, out_c//8, kernel_size=3, padding=6, dilation=6)
+        self.bn2_2 = nn.BatchNorm2d(out_c//8)
+
+        self.dial9 = nn.Conv2d(out_c//8, out_c//16, kernel_size=3, padding=9, dilation=9)
+        self.bn2_3 = nn.BatchNorm2d(out_c//16)
+
+        self.dial12 = nn.Conv2d(out_c//16, out_c//16, kernel_size=3, padding=12, dilation=12)
+        self.bn2_4 = nn.BatchNorm2d(out_c//16)
+        
+
+        self.spatial = ResSDNLayer(out_c, out_c, 16, range(4), 3, 1, 1, upsample)
+        self.bn3 = nn.BatchNorm2d(out_c)
+
+        self.relu = nn.ReLU()
+
+    def forward(self, inputs):
+        x = self.conv(inputs)
+        x = self.bn1(x)
+        x = self.relu(x)
+        #print(x.shape)
+        
+        z1=self.dial3(x)
+        z1=self.bn2_1(z1)
+        z1=self.relu(z1)
+        #print(z1.shape)
+        
+        z2=self.dial6(z1)
+        z2=self.bn2_2(z2)
+        z2=self.relu(z2)
+        #print(z2.shape)
+        
+        z3=self.dial9(z2)
+        z3=self.bn2_3(z3)
+        z3=self.relu(z3)
+        #print(z3.shape)
+        
+        z4=self.dial12(z3)
+        z4=self.bn2_4(z4)
+        z4=self.relu(z4)
+        #print(z4.shape)
+        
+        z = torch.cat([x, z1, z2, z3, z4], 1)
+
+        x = self.spatial(z)
+        x = self.bn3(x)
+        x = self.relu(x)
+
+        return x
+    
+class dialated_conv_block(nn.Module):
+    def __init__(self, in_c, out_c, upsample=False):
+        super().__init__()
+
+        self.conv = nn.Conv2d(in_c, out_c//2, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(out_c//2)
+        
+        
+        self.dial3 = nn.Conv2d(out_c//2, out_c//4, kernel_size=3, padding=3, dilation=3)
+        self.bn2_1 = nn.BatchNorm2d(out_c//4)
+        
+        self.dial6 = nn.Conv2d(out_c//4, out_c//8, kernel_size=3, padding=6, dilation=6)
+        self.bn2_2 = nn.BatchNorm2d(out_c//8)
+
+        self.dial9 = nn.Conv2d(out_c//8, out_c//16, kernel_size=3, padding=9, dilation=9)
+        self.bn2_3 = nn.BatchNorm2d(out_c//16)
+
+        self.dial12 = nn.Conv2d(out_c//16, out_c//16, kernel_size=3, padding=12, dilation=12)
+        self.bn2_4 = nn.BatchNorm2d(out_c//16)
+        
+        self.conv2 = nn.Conv2d(out_c, out_c, kernel_size=3, padding=1)
+        self.bn3 = nn.BatchNorm2d(out_c)        
+
+        self.relu = nn.ReLU()
+
+    def forward(self, inputs):
+        x = self.conv(inputs)
+        x = self.bn1(x)
+        x = self.relu(x)
+        #print(x.shape)
+        
+        z1=self.dial3(x)
+        z1=self.bn2_1(z1)
+        z1=self.relu(z1)
+        #print(z1.shape)
+        
+        z2=self.dial6(z1)
+        z2=self.bn2_2(z2)
+        z2=self.relu(z2)
+        #print(z2.shape)
+        
+        z3=self.dial9(z2)
+        z3=self.bn2_3(z3)
+        z3=self.relu(z3)
+        #print(z3.shape)
+        
+        z4=self.dial12(z3)
+        z4=self.bn2_4(z4)
+        z4=self.relu(z4)
+        #print(z4.shape)
+        
+        z = torch.cat([x, z1, z2, z3, z4], 1)
+        
+        x = self.conv2(z)
+        x = self.bn3(x)
+        x = self.relu(x)
+
+        return x
+    
+class dialated_block(nn.Module):
+    def __init__(self, in_c, out_c, upsample=False):
+        super().__init__()
+
+        self.conv = nn.Conv2d(in_c, out_c//2, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(out_c//2)
+        
+        
+        self.dial3 = nn.Conv2d(out_c//2, out_c//4, kernel_size=3, padding=3, dilation=3)
+        self.bn2_1 = nn.BatchNorm2d(out_c//4)
+        
+        self.dial6 = nn.Conv2d(out_c//4, out_c//8, kernel_size=3, padding=6, dilation=6)
+        self.bn2_2 = nn.BatchNorm2d(out_c//8)
+
+        self.dial9 = nn.Conv2d(out_c//8, out_c//16, kernel_size=3, padding=9, dilation=9)
+        self.bn2_3 = nn.BatchNorm2d(out_c//16)
+
+        self.dial12 = nn.Conv2d(out_c//16, out_c//16, kernel_size=3, padding=12, dilation=12)
+        self.bn2_4 = nn.BatchNorm2d(out_c//16)
+        
+
+        self.relu = nn.ReLU()
+
+    def forward(self, inputs):
+        x = self.conv(inputs)
+        x = self.bn1(x)
+        x = self.relu(x)
+        #print(x.shape)
+        
+        z1=self.dial3(x)
+        z1=self.bn2_1(z1)
+        z1=self.relu(z1)
+        #print(z1.shape)
+        
+        z2=self.dial6(z1)
+        z2=self.bn2_2(z2)
+        z2=self.relu(z2)
+        #print(z2.shape)
+        
+        z3=self.dial9(z2)
+        z3=self.bn2_3(z3)
+        z3=self.relu(z3)
+        #print(z3.shape)
+        
+        z4=self.dial12(z3)
+        z4=self.bn2_4(z4)
+        z4=self.relu(z4)
+        #print(z4.shape)
+        
+        z = torch.cat([x, z1, z2, z3, z4], 1)
+
+        return z
+
 class VGGSpatialBlock(nn.Module):
     def __init__(self, in_channels, middle_channels, out_channels, upsample=False):
         super().__init__()
@@ -152,6 +418,29 @@ class VGGSpatialBlock(nn.Module):
         out = self.relu(out)
 
         return out
+    
+class spatial_block(nn.Module):
+    def __init__(self, in_c, out_c, upsample=False):
+        super().__init__()
+
+        self.conv = nn.Conv2d(in_c, out_c, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(out_c)
+
+        self.spatial = ResSDNLayer(out_c, out_c, 16, range(4), 3, 1, 1, upsample)
+        self.bn2 = nn.BatchNorm2d(out_c)
+
+        self.relu = nn.ReLU()
+
+    def forward(self, inputs):
+        x = self.conv(inputs)
+        x = self.bn1(x)
+        x = self.relu(x)
+
+        x = self.spatial(x)
+        x = self.bn2(x)
+        x = self.relu(x)
+
+        return x
 
 class VGGBlock(nn.Module):
     def __init__(self, in_channels, middle_channels, out_channels):
@@ -172,6 +461,29 @@ class VGGBlock(nn.Module):
         out = self.relu(out)
 
         return out
+
+class conv_block(nn.Module):
+    def __init__(self, in_c, out_c):
+        super().__init__()
+
+        self.conv1 = nn.Conv2d(in_c, out_c, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(out_c)
+
+        self.conv2 = nn.Conv2d(out_c, out_c, kernel_size=3, padding=1)
+        self.bn2 = nn.BatchNorm2d(out_c)
+
+        self.relu = nn.ReLU()
+
+    def forward(self, inputs):
+        x = self.conv1(inputs)
+        x = self.bn1(x)
+        x = self.relu(x)
+
+        x = self.conv2(x)
+        x = self.bn2(x)
+        x = self.relu(x)
+
+        return x
     
 # SDN
 class SDNCell(nn.Module):
