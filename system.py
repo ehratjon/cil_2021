@@ -26,6 +26,9 @@ class SemanticSegmentationSystem(pl.LightningModule):
         self.batch_size = batch_size
         
         self.dice_loss = DiceLoss()
+        
+        self.upsample2x = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
+        self.upsample608 = nn.Upsample(size=(608, 608), mode='bilinear', align_corners=True)
 
     def forward(self, X):
         y_pred = self.model(X.float())
@@ -82,27 +85,33 @@ class SemanticSegmentationSystem(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         X, name = batch
         
-        X = X.float()
-
-        y_preds = []
-        
-        for x in X:
-            y_pred = self.predict_patches(x)
-
-            y_preds.append(y_pred)
-        
-        y_preds = torch.stack(y_preds)
+        y_preds = self.predict_test_batch(X)
 
         return (y_preds, name)
 
     def test_epoch_end(self, outputs):
         self.test_results = outputs
+        
+    def predict_test_batch(self, X):
+        X = X.float()
+        y_preds = []
+        
+        for x in X:
+            y_pred = self.predict_patches(x)
+                        
+            y_preds.append(y_pred)
+        
+        y_preds = torch.stack(y_preds)
 
-    def predict_patches(self, patches, H=608, W=608):
-        y_pred_patches = self(patches)
+        return y_preds
+    
+    def predict_patches(self, patches, H=600, W=600):
+        y_pred_patches = self.upsample2x(self(patches))
 
-        y_pred = self.restore_image_mask(y_pred_patches, H, W, 80, 4, 4)
+        y_pred = self.restore_image_mask(y_pred_patches, H, W, 70, 5, 5)
 
+        y_pred = self.upsample608(y_pred)[0]
+        
         return y_pred
     
     @torch.no_grad()
@@ -172,7 +181,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
         
         restored_ones = self.restore_image(patches_ones, H, W, stride)
             
-        return restored_output / restored_ones 
+        return (restored_output / restored_ones)
             
     def train_dataloader(self):
         return self.datamodule.train_dataloader()
