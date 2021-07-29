@@ -36,7 +36,7 @@ num_workers = 8
 # In[4]:
 
 
-pl.seed_everything(33, workers=True)
+pl.seed_everything(7, workers=True)
 
 
 # ## 1.1 DataModule
@@ -58,7 +58,7 @@ X, y = next(iter(road_data.train_dataloader()))
 # In[11]:
 
 
-model = UNet_3Plus_Dilated(n_classes=1)
+model = UNet_3Plus_Spatial(3, 1)
 
 
 # In[12]:
