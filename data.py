@@ -130,17 +130,10 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
     def augmentations(self, img, mask, stage=None):
         #img = self.color_transform(img)
-<<<<<<< HEAD
-                               
-        img_patches = self.split_image(img, kernel_size=320, stride=40)
-        mask_patches = self.split_image(mask, kernel_size=320, stride=40)
-                    
-=======
                 
         img_patches = self.split_image(img, kernel_size=320, stride=40)
         mask_patches = self.split_image(mask, kernel_size=320, stride=40)
             
->>>>>>> 8f4f62e73472dd7d0cf865e7f196241131c010c9
         index_chosen = random.randint(0, img_patches.shape[0] - 1)
         img, mask = img_patches[index_chosen], mask_patches[index_chosen]
                 
@@ -152,12 +145,10 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
         return img, mask
 
-<<<<<<< HEAD
     def test_augmentations(self, img, name): 
         img = torch.nn.Upsample(size=(600, 600), mode='bilinear', align_corners=True)(img[None, :, :, :].float())[0].byte()
 
         img_patches = self.split_image(img, kernel_size=320, stride=70)
-=======
                                 
         patches_avg = []
         for patch in img_patches:
