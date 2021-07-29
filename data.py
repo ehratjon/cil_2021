@@ -128,9 +128,7 @@ class RoadSatelliteModule(pl.LightningDataModule):
             pin_memory=True
         )
 
-    def augmentations(self, img, mask, stage=None):
-        #img = self.color_transform(img)
-                
+    def augmentations(self, img, mask, stage=None):                
         img_patches = self.split_image(img, kernel_size=320, stride=40)
         mask_patches = self.split_image(mask, kernel_size=320, stride=40)
             
@@ -141,8 +139,6 @@ class RoadSatelliteModule(pl.LightningDataModule):
         img = self.get_patches_averages_rgb(img, size=size, stride=stride)
         mask = self.get_patches_averages_rgb(mask, is_mask=True, size=size, stride=stride)
         
-        #img = self.merged_img_rag(img, num_components=2000, compactness=10, thresh=0.03)
-
         return img, mask
 
     def test_augmentations(self, img, name): 

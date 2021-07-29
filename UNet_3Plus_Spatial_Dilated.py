@@ -26,7 +26,7 @@ pl.seed_everything(7, workers=True)
 
 road_data = RoadSatelliteModule(num_workers=num_workers, batch_size=batch_size)
 
-model = UNet(1, 3)
+model = UNet_3Plus_Spatial_Dilated(3, 1)
 model_name = str(model).partition('(')[0]
 
 system = SemanticSegmentationSystem(model, road_data)
@@ -68,10 +68,9 @@ trainer = pl.Trainer(
     callbacks=[early_stop_callback, checkpoint_callback]
 )
 
-trainer.fit(system)
-
 if gpu_count != 0:
     model.cuda()
+
 
 trainer.test()
 
