@@ -83,11 +83,27 @@ class SemanticSegmentationSystem(pl.LightningModule):
         X, name = batch
         
         X = X.float()
+
+        y_preds = []
         
-        return (self(X), name)
+        for x in X:
+            y_pred = self.predict_patches(x)
+
+            y_preds.append(y_pred)
+        
+        y_preds = torch.stack(y_preds)
+
+        return (y_preds, name)
 
     def test_epoch_end(self, outputs):
         self.test_results = outputs
+
+    def predict_patches(self, patches, H=608, W=608):
+        y_pred_patches = self(patches)
+
+        y_pred = self.restore_image_mask(y_pred_patches, H, W, 80, 4, 4)
+
+        return y_pred
     
     @torch.no_grad()
     def visualize_results(self):
@@ -118,6 +134,45 @@ class SemanticSegmentationSystem(pl.LightningModule):
         
         for i, seg_image in enumerate(seg_imgs_pred):
             show_image(seg_image)
+
+    def split_image(self, imgs, kernel_size=240, stride=80):
+        if len(imgs.shape) < 4:
+            imgs = imgs[None, :, :, :]
+        
+        B, C, H, W = imgs.shape
+        
+        patches = imgs.float().unfold(3, kernel_size, stride).unfold(2, kernel_size, stride).permute(0,1,2,3,5,4)
+        
+        return patches.contiguous().view(patches.shape[0], patches.shape[1], patches.shape[2] * patches.shape[3], patches.shape[4], patches.shape[5]).squeeze(0).transpose(1, 0).byte()
+  
+    def restore_image(self, patches, H=400, W=400, stride=80):
+        B, C, _, _, kernel_size, _ = patches.shape
+            
+        patches = patches.contiguous().view(B, C, -1, kernel_size*kernel_size)
+        patches = patches.permute(0, 1, 3, 2) 
+        patches = patches.contiguous().view(B, C*kernel_size*kernel_size, -1)
+            
+        output = torch.nn.functional.fold(
+            patches, output_size=(H, W), kernel_size=kernel_size, stride=stride)
+            
+        return output
+
+    def restore_image_mask(self, patches, H=400, W=400, stride=80, num_patches_v=3, num_patches_h=3):
+        patches = patches.transpose(1, 0).view(patches.shape[1], num_patches_v, num_patches_h, patches.shape[2], patches.shape[3]).unsqueeze(0)    
+
+        B, C, _, _, kernel_size, _ = patches.shape
+        
+        restored_output = self.restore_image(patches, H, W, stride)
+        
+        ones = torch.ones((B, C, H, W), device='cuda')
+        
+        patches_ones = self.split_image(ones, kernel_size, stride).float()
+        
+        patches_ones = patches_ones.transpose(1, 0).view(patches_ones.shape[1], num_patches_v, num_patches_h, patches_ones.shape[2], patches_ones.shape[3]).unsqueeze(0)    
+        
+        restored_ones = self.restore_image(patches_ones, H, W, stride)
+            
+        return restored_output / restored_ones 
             
     def train_dataloader(self):
         return self.datamodule.train_dataloader()

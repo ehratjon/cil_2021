@@ -179,14 +179,14 @@ class UNet_3Plus_Spatial_Dilated(nn.Module):
 
         ## -------------Decoder-------------
         h1_PT_hd4 = self.h1_PT_hd4_conv(self.h1_PT_hd4(h1))
-        h2_PT_hd4 = self.h2_PT_hd4_relu(self.h2_PT_hd4_bn(self.h2_PT_hd4_spatial(self.h2_PT_hd4(h2))))
+        h2_PT_hd4 = self.h2_PT_hd4_conv(self.h2_PT_hd4(h2))
         h3_PT_hd4 = self.h3_PT_hd4_conv(self.h3_PT_hd4(h3))
         h4_Cat_hd4 = self.h4_Cat_hd4_conv(h4)
         hd5_UT_hd4 = self.hd5_UT_hd4_conv(self.hd5_UT_hd4(hd5))
         hd4 = self.conv4d_1(torch.cat((h1_PT_hd4, h2_PT_hd4, h3_PT_hd4, h4_Cat_hd4, hd5_UT_hd4), 1)) # hd4->40*40*UpChannels
 
         h1_PT_hd3 = self.h1_PT_hd3_conv(self.h1_PT_hd3(h1))
-        h2_PT_hd3 = self.h2_PT_hd3_relu(self.h2_PT_hd3_bn(self.h2_PT_hd3_spatial(self.h2_PT_hd3(h2))))
+        h2_PT_hd3 = self.h2_PT_hd3_conv(self.h2_PT_hd3(h2))
         h3_Cat_hd3 = self.h3_Cat_hd3_conv(h3)
         hd4_UT_hd3 = self.hd4_UT_hd3_conv(self.hd4_UT_hd3(hd4))
         hd5_UT_hd3 = self.hd5_UT_hd3_conv(self.hd5_UT_hd3(hd5))

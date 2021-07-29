@@ -129,8 +129,10 @@ class RoadSatelliteModule(pl.LightningDataModule):
         )
 
     def augmentations(self, img, mask, stage=None):
-        img_patches = self.split_image(img, kernel_size=320, stride=40)
-        mask_patches = self.split_image(mask, kernel_size=320, stride=40)
+        #img = self.color_transform(img)
+                
+        img_patches = self.split_image(img, kernel_size=384, stride=40)
+        mask_patches = self.split_image(mask, kernel_size=384, stride=40)
             
         index_chosen = random.randint(0, img_patches.shape[0] - 1)
         img, mask = img_patches[index_chosen], mask_patches[index_chosen]
