@@ -64,22 +64,22 @@ class UNet_3Plus_Spatial_Dilated(nn.Module):
         '''stage 4d'''
         # h1->320*320, hd4->40*40, Pooling 8 times
         self.h1_PT_hd4 = nn.MaxPool2d(8, 8, ceil_mode=True)
-        self.h1_PT_hd4_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_PT_hd4_conv = conv_block(filters[0], self.CatChannels)
 
         # h2->160*160, hd4->40*40, Pooling 4 times
         self.h2_PT_hd4 = nn.MaxPool2d(4, 4, ceil_mode=True)
-        self.h2_PT_hd4_conv = dilated_block(filters[1], self.CatChannels)
+        self.h2_PT_hd4_conv = conv_block(filters[1], self.CatChannels)
 
         # h3->80*80, hd4->40*40, Pooling 2 times
         self.h3_PT_hd4 = nn.MaxPool2d(2, 2, ceil_mode=True)
-        self.h3_PT_hd4_conv = dilated_block(filters[2], self.CatChannels)
+        self.h3_PT_hd4_conv = conv_block(filters[2], self.CatChannels)
 
         # h4->40*40, hd4->40*40, Concatenation
-        self.h4_Cat_hd4_conv = dilated_block(filters[3], self.CatChannels)
+        self.h4_Cat_hd4_conv = conv_block(filters[3], self.CatChannels)
 
         # hd5->20*20, hd4->40*40, Upsample 2 times
         self.hd5_UT_hd4 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd4_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd4_conv = conv_block(filters[4], self.CatChannels)
 
         # fusion(h1_PT_hd4, h2_PT_hd4, h3_PT_hd4, h4_Cat_hd4, hd5_UT_hd4)
         self.conv4d_1 = dilated_spatial_block(self.UpChannels, self.UpChannels)  # 16
@@ -87,22 +87,22 @@ class UNet_3Plus_Spatial_Dilated(nn.Module):
         '''stage 3d'''
         # h1->320*320, hd3->80*80, Pooling 4 times
         self.h1_PT_hd3 = nn.MaxPool2d(4, 4, ceil_mode=True)
-        self.h1_PT_hd3_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_PT_hd3_conv = conv_block(filters[0], self.CatChannels)
 
         # h2->160*160, hd3->80*80, Pooling 2 times
         self.h2_PT_hd3 = nn.MaxPool2d(2, 2, ceil_mode=True)
-        self.h2_PT_hd3_conv = dilated_block(filters[1], self.CatChannels)
+        self.h2_PT_hd3_conv = conv_block(filters[1], self.CatChannels)
 
         # h3->80*80, hd3->80*80, Concatenation
-        self.h3_Cat_hd3_conv = dilated_block(filters[2], self.CatChannels)
+        self.h3_Cat_hd3_conv = conv_block(filters[2], self.CatChannels)
 
         # hd4->40*40, hd4->80*80, Upsample 2 times
         self.hd4_UT_hd3 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd4_UT_hd3_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd4_UT_hd3_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd5->20*20, hd4->80*80, Upsample 4 times
         self.hd5_UT_hd3 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd3_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd3_conv = conv_block(filters[4], self.CatChannels)
 
         # fusion(h1_PT_hd3, h2_PT_hd3, h3_Cat_hd3, hd4_UT_hd3, hd5_UT_hd3)
         self.conv3d_1 = dilated_spatial_block(self.UpChannels, self.UpChannels)  # 16
@@ -110,44 +110,44 @@ class UNet_3Plus_Spatial_Dilated(nn.Module):
         '''stage 2d '''
         # h1->320*320, hd2->160*160, Pooling 2 times
         self.h1_PT_hd2 = nn.MaxPool2d(2, 2, ceil_mode=True)
-        self.h1_PT_hd2_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_PT_hd2_conv = conv_block(filters[0], self.CatChannels)
 
         # h2->160*160, hd2->160*160, Concatenation
-        self.h2_Cat_hd2_conv = dilated_block(filters[1], self.CatChannels)
+        self.h2_Cat_hd2_conv = conv_block(filters[1], self.CatChannels)
 
         # hd3->80*80, hd2->160*160, Upsample 2 times
         self.hd3_UT_hd2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd3_UT_hd2_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd3_UT_hd2_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd4->40*40, hd2->160*160, Upsample 4 times
         self.hd4_UT_hd2 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)  # 14*14
-        self.hd4_UT_hd2_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd4_UT_hd2_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd5->20*20, hd2->160*160, Upsample 8 times
         self.hd5_UT_hd2 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd2_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd2_conv = conv_block(filters[4], self.CatChannels)
 
         # fusion(h1_PT_hd2, h2_Cat_hd2, hd3_UT_hd2, hd4_UT_hd2, hd5_UT_hd2)
         self.conv2d_1 = dilated_block(self.UpChannels, self.UpChannels)  # 16
 
         '''stage 1d'''
         # h1->320*320, hd1->320*320, Concatenation
-        self.h1_Cat_hd1_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_Cat_hd1_conv = conv_block(filters[0], self.CatChannels)
 
         # hd2->160*160, hd1->320*320, Upsample 2 times
         self.hd2_UT_hd1 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd2_UT_hd1_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd2_UT_hd1_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd3->80*80, hd1->320*320, Upsample 4 times
         self.hd3_UT_hd1 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)  # 14*14
-        self.hd3_UT_hd1_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd3_UT_hd1_conv = conv_block(self.UpChannels, self.CatChannels)
         # hd4->40*40, hd1->320*320, Upsample 8 times
         self.hd4_UT_hd1 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)  # 14*14
-        self.hd4_UT_hd1_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd4_UT_hd1_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd5->20*20, hd1->320*320, Upsample 16 times
         self.hd5_UT_hd1 = nn.Upsample(scale_factor=16, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd1_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd1_conv = conv_block(filters[4], self.CatChannels)
         # fusion(h1_Cat_hd1, hd2_UT_hd1, hd3_UT_hd1, hd4_UT_hd1, hd5_UT_hd1)
         self.conv1d_1 = dilated_block(self.UpChannels, self.UpChannels)  # 16
 
@@ -476,22 +476,22 @@ class UNet_3Plus_Dilated(nn.Module):
         '''stage 4d'''
         # h1->320*320, hd4->40*40, Pooling 8 times
         self.h1_PT_hd4 = nn.MaxPool2d(8, 8, ceil_mode=True)
-        self.h1_PT_hd4_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_PT_hd4_conv = conv_block(filters[0], self.CatChannels)
 
         # h2->160*160, hd4->40*40, Pooling 4 times
         self.h2_PT_hd4 = nn.MaxPool2d(4, 4, ceil_mode=True)
-        self.h2_PT_hd4_conv = dilated_block(filters[1], self.CatChannels)
+        self.h2_PT_hd4_conv = conv_block(filters[1], self.CatChannels)
 
         # h3->80*80, hd4->40*40, Pooling 2 times
         self.h3_PT_hd4 = nn.MaxPool2d(2, 2, ceil_mode=True)
-        self.h3_PT_hd4_conv = dilated_block(filters[2], self.CatChannels)
+        self.h3_PT_hd4_conv = conv_block(filters[2], self.CatChannels)
 
         # h4->40*40, hd4->40*40, Concatenation
-        self.h4_Cat_hd4_conv = dilated_block(filters[3], self.CatChannels)
+        self.h4_Cat_hd4_conv = conv_block(filters[3], self.CatChannels)
 
         # hd5->20*20, hd4->40*40, Upsample 2 times
         self.hd5_UT_hd4 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd4_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd4_conv = conv_block(filters[4], self.CatChannels)
 
         # fusion(h1_PT_hd4, h2_PT_hd4, h3_PT_hd4, h4_Cat_hd4, hd5_UT_hd4)
         self.conv4d_1 = dilated_block(self.UpChannels, self.UpChannels)  # 16
@@ -499,22 +499,22 @@ class UNet_3Plus_Dilated(nn.Module):
         '''stage 3d'''
         # h1->320*320, hd3->80*80, Pooling 4 times
         self.h1_PT_hd3 = nn.MaxPool2d(4, 4, ceil_mode=True)
-        self.h1_PT_hd3_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_PT_hd3_conv = conv_block(filters[0], self.CatChannels)
 
         # h2->160*160, hd3->80*80, Pooling 2 times
         self.h2_PT_hd3 = nn.MaxPool2d(2, 2, ceil_mode=True)
-        self.h2_PT_hd3_conv = dilated_block(filters[1], self.CatChannels)
+        self.h2_PT_hd3_conv = conv_block(filters[1], self.CatChannels)
 
         # h3->80*80, hd3->80*80, Concatenation
-        self.h3_Cat_hd3_conv = dilated_block(filters[2], self.CatChannels)
+        self.h3_Cat_hd3_conv = conv_block(filters[2], self.CatChannels)
 
         # hd4->40*40, hd4->80*80, Upsample 2 times
         self.hd4_UT_hd3 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd4_UT_hd3_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd4_UT_hd3_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd5->20*20, hd4->80*80, Upsample 4 times
         self.hd5_UT_hd3 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd3_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd3_conv = conv_block(filters[4], self.CatChannels)
 
         # fusion(h1_PT_hd3, h2_PT_hd3, h3_Cat_hd3, hd4_UT_hd3, hd5_UT_hd3)
         self.conv3d_1 = dilated_block(self.UpChannels, self.UpChannels)  # 16
@@ -522,44 +522,44 @@ class UNet_3Plus_Dilated(nn.Module):
         '''stage 2d '''
         # h1->320*320, hd2->160*160, Pooling 2 times
         self.h1_PT_hd2 = nn.MaxPool2d(2, 2, ceil_mode=True)
-        self.h1_PT_hd2_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_PT_hd2_conv = conv_block(filters[0], self.CatChannels)
 
         # h2->160*160, hd2->160*160, Concatenation
-        self.h2_Cat_hd2_conv = dilated_block(filters[1], self.CatChannels)
+        self.h2_Cat_hd2_conv = conv_block(filters[1], self.CatChannels)
 
         # hd3->80*80, hd2->160*160, Upsample 2 times
         self.hd3_UT_hd2 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd3_UT_hd2_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd3_UT_hd2_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd4->40*40, hd2->160*160, Upsample 4 times
         self.hd4_UT_hd2 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)  # 14*14
-        self.hd4_UT_hd2_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd4_UT_hd2_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd5->20*20, hd2->160*160, Upsample 8 times
         self.hd5_UT_hd2 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd2_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd2_conv = conv_block(filters[4], self.CatChannels)
 
         # fusion(h1_PT_hd2, h2_Cat_hd2, hd3_UT_hd2, hd4_UT_hd2, hd5_UT_hd2)
         self.conv2d_1 = dilated_block(self.UpChannels, self.UpChannels)  # 16
 
         '''stage 1d'''
         # h1->320*320, hd1->320*320, Concatenation
-        self.h1_Cat_hd1_conv = dilated_block(filters[0], self.CatChannels)
+        self.h1_Cat_hd1_conv = conv_block(filters[0], self.CatChannels)
 
         # hd2->160*160, hd1->320*320, Upsample 2 times
         self.hd2_UT_hd1 = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)  # 14*14
-        self.hd2_UT_hd1_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd2_UT_hd1_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd3->80*80, hd1->320*320, Upsample 4 times
         self.hd3_UT_hd1 = nn.Upsample(scale_factor=4, mode='bilinear', align_corners=True)  # 14*14
-        self.hd3_UT_hd1_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd3_UT_hd1_conv = conv_block(self.UpChannels, self.CatChannels)
         # hd4->40*40, hd1->320*320, Upsample 8 times
         self.hd4_UT_hd1 = nn.Upsample(scale_factor=8, mode='bilinear', align_corners=True)  # 14*14
-        self.hd4_UT_hd1_conv = dilated_block(self.UpChannels, self.CatChannels)
+        self.hd4_UT_hd1_conv = conv_block(self.UpChannels, self.CatChannels)
 
         # hd5->20*20, hd1->320*320, Upsample 16 times
         self.hd5_UT_hd1 = nn.Upsample(scale_factor=16, mode='bilinear', align_corners=True)  # 14*14
-        self.hd5_UT_hd1_conv = dilated_block(filters[4], self.CatChannels)
+        self.hd5_UT_hd1_conv = conv_block(filters[4], self.CatChannels)
         # fusion(h1_Cat_hd1, hd2_UT_hd1, hd3_UT_hd1, hd4_UT_hd1, hd5_UT_hd1)
         self.conv1d_1 = dilated_block(self.UpChannels, self.UpChannels)  # 16
 
@@ -865,27 +865,27 @@ class NestedUNetSpatialDilated(nn.Module):
         self.pool = nn.MaxPool2d(2, 2)
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv0_0 = dilated_block(input_channels, nb_filter[0])
-        self.conv1_0 = dilated_block(nb_filter[0], nb_filter[1])
+        self.conv0_0 = dilated_conv_block(input_channels, nb_filter[0])
+        self.conv1_0 = dilated_conv_block(nb_filter[0], nb_filter[1])
         
         self.spatial2_0 = VGGSpatialBlock(nb_filter[1], nb_filter[2], nb_filter[2], False)
         self.spatial3_0 = VGGSpatialBlock(nb_filter[2], nb_filter[3], nb_filter[3], False)
         self.spatial4_0 = VGGSpatialBlock(nb_filter[3], nb_filter[4], nb_filter[4], False)
 
-        self.conv0_1 = dilated_block(nb_filter[0]+nb_filter[1], nb_filter[0])
-        self.conv1_1 = dilated_block(nb_filter[1]+nb_filter[2], nb_filter[1])
+        self.conv0_1 = dilated_conv_block(nb_filter[0]+nb_filter[1], nb_filter[0])
+        self.conv1_1 = dilated_conv_block(nb_filter[1]+nb_filter[2], nb_filter[1])
         
         self.spatial2_1 = VGGSpatialBlock(nb_filter[2]+nb_filter[3], nb_filter[2], nb_filter[2], True)
         self.spatial3_1 = VGGSpatialBlock(nb_filter[3]+nb_filter[4], nb_filter[3], nb_filter[3], True)
         
-        self.conv0_2 = dilated_block(nb_filter[0]*2+nb_filter[1], nb_filter[0])
-        self.conv1_2 = dilated_block(nb_filter[1]*2+nb_filter[2], nb_filter[1])
+        self.conv0_2 = dilated_conv_block(nb_filter[0]*2+nb_filter[1], nb_filter[0])
+        self.conv1_2 = dilated_conv_block(nb_filter[1]*2+nb_filter[2], nb_filter[1])
         
         self.spatial2_2 = VGGSpatialBlock(nb_filter[2]*2+nb_filter[3], nb_filter[2], nb_filter[2], True)
 
-        self.conv0_3 = dilated_block(nb_filter[0]*3+nb_filter[1], nb_filter[0], nb_filter[0])
-        self.conv1_3 = dilated_block(nb_filter[1]*3+nb_filter[2], nb_filter[1], nb_filter[1])
-        self.conv0_4 = dilated_block(nb_filter[0]*4+nb_filter[1], nb_filter[0], nb_filter[0])
+        self.conv0_3 = dilated_conv_block(nb_filter[0]*3+nb_filter[1], nb_filter[0])
+        self.conv1_3 = dilated_conv_block(nb_filter[1]*3+nb_filter[2], nb_filter[1])
+        self.conv0_4 = dilated_conv_block(nb_filter[0]*4+nb_filter[1], nb_filter[0])
 
         self.final1 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
         self.final2 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
@@ -1017,26 +1017,26 @@ class NestedUNetDilated(nn.Module):
         self.pool = nn.MaxPool2d(2, 2)
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv0_0 = dilated_block(input_channels, nb_filter[0])
-        self.conv1_0 = dilated_block(nb_filter[0], nb_filter[1])
-        self.conv2_0 = dilated_block(nb_filter[1], nb_filter[2])        
-        self.conv3_0 = dilated_block(nb_filter[2], nb_filter[3])
-        self.conv4_0 = dilated_block(nb_filter[3], nb_filter[4])
+        self.conv0_0 = dilated_conv_block(input_channels, nb_filter[0])
+        self.conv1_0 = dilated_conv_block(nb_filter[0], nb_filter[1])
+        self.conv2_0 = dilated_conv_block(nb_filter[1], nb_filter[2])        
+        self.conv3_0 = dilated_conv_block(nb_filter[2], nb_filter[3])
+        self.conv4_0 = dilated_conv_block(nb_filter[3], nb_filter[4])
 
-        self.conv0_1 = dilated_block(nb_filter[0]+nb_filter[1], nb_filter[0])
-        self.conv1_1 = dilated_block(nb_filter[1]+nb_filter[2], nb_filter[1])
+        self.conv0_1 = dilated_conv_block(nb_filter[0]+nb_filter[1], nb_filter[0])
+        self.conv1_1 = dilated_conv_block(nb_filter[1]+nb_filter[2], nb_filter[1])
         
-        self.conv2_1 = dilated_block(nb_filter[2]+nb_filter[3], nb_filter[2])
-        self.conv3_1 = dilated_block(nb_filter[3]+nb_filter[4], nb_filter[3])
+        self.conv2_1 = dilated_conv_block(nb_filter[2]+nb_filter[3], nb_filter[2])
+        self.conv3_1 = dilated_conv_block(nb_filter[3]+nb_filter[4], nb_filter[3])
 
-        self.conv0_2 = dilated_block(nb_filter[0]*2+nb_filter[1], nb_filter[0])
-        self.conv1_2 = dilated_block(nb_filter[1]*2+nb_filter[2], nb_filter[1])
+        self.conv0_2 = dilated_conv_block(nb_filter[0]*2+nb_filter[1], nb_filter[0])
+        self.conv1_2 = dilated_conv_block(nb_filter[1]*2+nb_filter[2], nb_filter[1])
         
-        self.conv2_2 = dilated_block(nb_filter[2]*2+nb_filter[3], nb_filter[2])
-        self.conv0_3 = dilated_block(nb_filter[0]*3+nb_filter[1], nb_filter[0])
-        self.conv1_3 = dilated_block(nb_filter[1]*3+nb_filter[2], nb_filter[1])
+        self.conv2_2 = dilated_conv_block(nb_filter[2]*2+nb_filter[3], nb_filter[2])
+        self.conv0_3 = dilated_conv_block(nb_filter[0]*3+nb_filter[1], nb_filter[0])
+        self.conv1_3 = dilated_conv_block(nb_filter[1]*3+nb_filter[2], nb_filter[1])
         
-        self.conv0_4 = dilated_block(nb_filter[0]*4+nb_filter[1], nb_filter[0])
+        self.conv0_4 = dilated_conv_block(nb_filter[0]*4+nb_filter[1], nb_filter[0])
 
         self.final1 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
         self.final2 = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
@@ -1161,8 +1161,8 @@ class UNetSpatialDilated(nn.Module):
         self.pool = nn.MaxPool2d(2, 2)
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv0_0 = dilated_block(input_channels, nb_filter[0])
-        self.conv1_0 = dilated_block(nb_filter[0], nb_filter[1])
+        self.conv0_0 = dilated_conv_block(input_channels, nb_filter[0])
+        self.conv1_0 = dilated_conv_block(nb_filter[0], nb_filter[1])
         self.spatial2_0 = dilated_spatial_block(nb_filter[1], nb_filter[2])
         self.spatial3_0 = dilated_spatial_block(nb_filter[2], nb_filter[3])
         
@@ -1170,8 +1170,8 @@ class UNetSpatialDilated(nn.Module):
 
         self.spatial3_1 = dilated_spatial_block(nb_filter[3]+nb_filter[4], nb_filter[3])
         self.spatial2_2 = dilated_spatial_block(nb_filter[2]+nb_filter[3], nb_filter[2])
-        self.conv1_3 = dilated_block(nb_filter[1]+nb_filter[2], nb_filter[1])
-        self.conv0_4 = dilated_block(nb_filter[0]+nb_filter[1], nb_filter[0])
+        self.conv1_3 = dilated_conv_block(nb_filter[1]+nb_filter[2], nb_filter[1])
+        self.conv0_4 = dilated_conv_block(nb_filter[0]+nb_filter[1], nb_filter[0])
 
         self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
 
@@ -1246,17 +1246,17 @@ class UNetDilated(nn.Module):
         self.pool = nn.MaxPool2d(2, 2)
         self.up = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
 
-        self.conv0_0 = dilated_block(input_channels, nb_filter[0])
-        self.conv1_0 = dilated_block(nb_filter[0], nb_filter[1])
-        self.spatial2_0 = dilated_block(nb_filter[1], nb_filter[2])
-        self.spatial3_0 = dilated_block(nb_filter[2], nb_filter[3])
+        self.conv0_0 = dilated_conv_block(input_channels, nb_filter[0])
+        self.conv1_0 = dilated_conv_block(nb_filter[0], nb_filter[1])
+        self.spatial2_0 = dilated_conv_block(nb_filter[1], nb_filter[2])
+        self.spatial3_0 = dilated_conv_block(nb_filter[2], nb_filter[3])
 
-        self.spatial4_0 = dilated_block(nb_filter[3], nb_filter[4])
+        self.spatial4_0 = dilated_conv_block(nb_filter[3], nb_filter[4])
 
-        self.spatial3_1 = dilated_block(nb_filter[3]+nb_filter[4], nb_filter[3])
-        self.spatial2_2 = dilated_block(nb_filter[2]+nb_filter[3], nb_filter[2])
-        self.conv1_3 = dilated_block(nb_filter[1]+nb_filter[2], nb_filter[1])
-        self.conv0_4 = dilated_block(nb_filter[0]+nb_filter[1], nb_filter[0])
+        self.spatial3_1 = dilated_conv_block(nb_filter[3]+nb_filter[4], nb_filter[3])
+        self.spatial2_2 = dilated_conv_block(nb_filter[2]+nb_filter[3], nb_filter[2])
+        self.conv1_3 = dilated_conv_block(nb_filter[1]+nb_filter[2], nb_filter[1])
+        self.conv0_4 = dilated_conv_block(nb_filter[0]+nb_filter[1], nb_filter[0])
 
         self.final = nn.Conv2d(nb_filter[0], num_classes, kernel_size=1)
 
