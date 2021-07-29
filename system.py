@@ -80,6 +80,8 @@ class SemanticSegmentationSystem(pl.LightningModule):
         self.log('validation_accuracy', accuracy, prog_bar=True)
         self.log('validation_f1', f1, prog_bar=True)
         
+        #show_image(y_sig[0]) 
+        
         return accuracy
     
     def test_step(self, batch, batch_idx):
@@ -245,3 +247,5 @@ def show_image(imgs):
         img = F.to_pil_image(img)
         axs[0, i].imshow(np.asarray(img))
         axs[0, i].set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
+    
+    plt.show()

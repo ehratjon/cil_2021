@@ -130,10 +130,17 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
     def augmentations(self, img, mask, stage=None):
         #img = self.color_transform(img)
+<<<<<<< HEAD
                                
         img_patches = self.split_image(img, kernel_size=320, stride=40)
         mask_patches = self.split_image(mask, kernel_size=320, stride=40)
                     
+=======
+                
+        img_patches = self.split_image(img, kernel_size=320, stride=40)
+        mask_patches = self.split_image(mask, kernel_size=320, stride=40)
+            
+>>>>>>> 8f4f62e73472dd7d0cf865e7f196241131c010c9
         index_chosen = random.randint(0, img_patches.shape[0] - 1)
         img, mask = img_patches[index_chosen], mask_patches[index_chosen]
                 
@@ -145,10 +152,12 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
         return img, mask
 
+<<<<<<< HEAD
     def test_augmentations(self, img, name): 
         img = torch.nn.Upsample(size=(600, 600), mode='bilinear', align_corners=True)(img[None, :, :, :].float())[0].byte()
 
         img_patches = self.split_image(img, kernel_size=320, stride=70)
+=======
                                 
         patches_avg = []
         for patch in img_patches:
@@ -177,7 +186,7 @@ class RoadSatelliteModule(pl.LightningDataModule):
                         
         return img, mask
     
-    def color_transform(self, img, lower=(0, 0, 0), upper= (60, 50, 200)):
+    def color_transform(self, img, lower=(0, 0, 0), upper= (80, 80, 255)):
         x = cv2.cvtColor(img.permute(1, 2, 0).numpy(), cv2.COLOR_RGB2HSV)
 
         mask = cv2.inRange(x, lower, upper)
