@@ -85,14 +85,16 @@ class SemanticSegmentationSystem(pl.LightningModule):
         return accuracy
     
     def test_step(self, batch, batch_idx):
-        X, name = batch
+        X, names = batch
         
         y_preds = self.predict_test_batch(X)
+        
+        pred_zip = list(zip(y_preds, names))
 
-        return (y_preds, name)
+        return pred_zip
 
     def test_epoch_end(self, outputs):
-        self.test_results = outputs
+        self.test_results = [item for sublist in outputs for item in sublist]
         
     def predict_test_batch(self, X):
         X = X.float()
