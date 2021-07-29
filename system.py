@@ -14,9 +14,8 @@ import torchvision.transforms.functional as F
 from torchvision.utils import draw_segmentation_masks
 
 class SemanticSegmentationSystem(pl.LightningModule):
-    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, lr: float = 1e-3, batch_size: int = 8):
+    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, lr: float = 1e-3, batch_size: int = 8):        
         super().__init__()
-        
         self.model = model
         self.datamodule = datamodule
         
@@ -198,7 +197,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 10, 2, 1e-6, verbose=2)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer, 10, 2, 1e-6, verbose=0)
         
         return {
             'optimizer': optimizer,
