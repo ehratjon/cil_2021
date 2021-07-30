@@ -111,6 +111,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
         
         for x in X:
             y_preds = []
+            x=5
             i = 0
             for angle in angles:
                 x_rotated = self.rotate_patches(x, angle)
@@ -119,9 +120,23 @@ class SemanticSegmentationSystem(pl.LightningModule):
                                                 
                 y_preds.append(y_pred)
                 
-            y_preds = torch.stack(y_preds)
+            # Majority voting
+            masks_batch = []
+            for mask_pred in y_preds:
+                mask_pred_patched = mask_to_patched_mask(mask_pred.cpu())
+
+                masks_batch.append(mask_pred_patched)
+
+            masks_batch = torch.stack(masks_batch)
+
+            masks_sum = masks_batch.sum(0)
+            mask_maj = masks_sum.clone()
+
+            mask_maj[masks_sum > len(angles) / 2] = 1.0
+            mask_maj[masks_sum <= len(angles) / 2] = 0.0            
             
-            y_preds_final.append(y_preds.mean(0))
+            y_preds_final.append(mask_maj)
+            #y_preds_final.append(y_preds.mean(0))
         
         y_preds_final = torch.stack(y_preds_final)
 
@@ -301,3 +316,23 @@ def get_patches_batch(imgs):
         imgs_patched.append(img_patched)
         
     return torch.stack(imgs_patched)
+foreground_threshold = 0.25 # percentage of pixels > 1 required to assign a foreground label to a patch
+
+# assign a label to a patch
+def patch_to_label(patch):
+    df = np.mean(patch)
+    if df > foreground_threshold:
+        return 1
+    else:
+        return 0
+    
+def mask_to_patched_mask(image):
+    patched_image = image.squeeze().detach().clone()
+    image = np.asarray(image.squeeze())
+    patch_size = 16
+    for j in range(0, image.shape[1], patch_size):
+        for i in range(0, image.shape[0], patch_size):
+            patch = image[i:i + patch_size, j:j + patch_size]
+            label = patch_to_label(patch)
+            patched_image[i:i + patch_size, j:j + patch_size] = label
+    return patched_image
