@@ -1,4 +1,5 @@
 import torch
+import torch.nn as nn
 from torch.utils.data import random_split
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
@@ -57,7 +58,6 @@ class RoadSatelliteModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.batch_size = batch_size
 
-        # Stupid fixy fix
         self.prepare_data()
         self.setup()
 
@@ -83,7 +83,9 @@ class RoadSatelliteModule(pl.LightningDataModule):
             ]
         )
         
-        
+        self.downsample2x = nn.Upsample(scale_factor=0.5, mode='bilinear', align_corners=True)
+        #self.downsample2x_nearest = nn.Upsample(size=(160, 160))
+
     def setup(self, stage=None):
         len_data = len(self.train_zip)
         
@@ -136,24 +138,31 @@ class RoadSatelliteModule(pl.LightningDataModule):
         index_chosen = random.randint(0, img_patches.shape[0] - 1)
         img, mask = img_patches[index_chosen], mask_patches[index_chosen]
                 
-        size=stride=2
-        img = self.get_patches_averages_rgb(img, size=size, stride=stride)
-        mask = self.get_patches_averages_rgb(mask, is_mask=True, size=size, stride=stride)
+        #size=stride=2
+        #img = self.get_patches_averages_rgb(img, size=size, stride=stride)
+        #mask = self.get_patches_averages_rgb(mask, is_mask=True, size=size, stride=stride)
+
+        img = self.downsample(img)
+        mask = self.downsample(mask)
         
-        return img, mask
+        mask[mask > 0] = 1.0
+        
+        return img.byte(), mask.byte()
 
     def test_augmentations(self, img, name): 
         img = torch.nn.Upsample(size=(600, 600), mode='bilinear', align_corners=True)(img[None, :, :, :].float())[0].byte()
 
         img_patches = self.split_image(img, kernel_size=320, stride=70)
-                                
+        
         patches_avg = []
         for patch in img_patches:
-            size=stride=2
-            patch = self.get_patches_averages_rgb(patch, size=size, stride=stride)
+            patch = self.downsample(patch)
+            
+            #size=stride=2
+            #patch = self.get_patches_averages_rgb(patch, size=size, stride=stride)
             #patch = self.merged_img_rag(patch, num_components=2000, compactness=10, thresh=0.03)
             
-            patches_avg.append(patch)
+            patches_avg.append(patch.byte())
 
         return torch.stack(patches_avg), name
 
@@ -173,6 +182,12 @@ class RoadSatelliteModule(pl.LightningDataModule):
             mask = TF.vflip(mask)
                         
         return img, mask
+    
+    def downsample(self, imgs):
+        if len(imgs.shape) == 4:
+            return self.downsample2x(imgs.float())
+        
+        return self.downsample2x(imgs[None, :, :, :].float())[0]
     
     def color_transform(self, img, lower=(0, 0, 0), upper= (80, 80, 255)):
         x = cv2.cvtColor(img.permute(1, 2, 0).numpy(), cv2.COLOR_RGB2HSV)
@@ -196,7 +211,7 @@ class RoadSatelliteModule(pl.LightningDataModule):
             patches_avg[patches_avg > 0.25] = 1.0
             
         return patches_avg.byte()
-
+        
     def weight_boundary(self, graph, src, dst, n):
         """
         Handle merging of nodes of a region boundary region adjacency graph.
