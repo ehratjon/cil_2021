@@ -23,6 +23,8 @@ import cv2
 import matplotlib.pyplot as plt
 from skimage.measure import regionprops
 
+from torch.utils.data import ConcatDataset
+
 class RoadSatelliteSet(Dataset):
     def __init__(self, dataset, transform_img=None, transform_tuple=None, random_transform_tuple=None):
         self.dataset = dataset
@@ -60,9 +62,8 @@ class RoadSatelliteModule(pl.LightningDataModule):
         self.setup()
 
     def prepare_data(self):
-        self.train_images = self.read_images('train/images/', ImageReadMode.RGB)
-                
-        self.train_masks = self.read_images('train/groundtruth/', ImageReadMode.GRAY)
+        self.train_images = self.read_images('CIL_street/data/maps1800/all/images/', ImageReadMode.RGB)    
+        self.train_masks = self.read_images('CIL_street/data/maps1800/all/groundtruth/', ImageReadMode.GRAY) 
     
         for i, train_mask in enumerate(self.train_masks):
             self.train_masks[i][self.train_masks[i] > 0] = 1
@@ -77,7 +78,6 @@ class RoadSatelliteModule(pl.LightningDataModule):
 
         self.transforms_img = T.Compose(
             [
-                T.RandomEqualize(p=1.0),
                 T.GaussianBlur(3, 5),
                 T.RandomAdjustSharpness(3, 1),
             ]
@@ -85,13 +85,14 @@ class RoadSatelliteModule(pl.LightningDataModule):
         
         
     def setup(self, stage=None):
-        train_length = int(len(self.train_zip) * 0.8)
-        valid_length = len(self.train_zip) - train_length
-
+        len_data = len(self.train_zip)
+        
+        train_length = int(len_data * 0.9)
+        valid_length = len_data - train_length
+        
         self.train_data, self.valid_data = random_split(self.train_zip, [train_length, valid_length])
-
+        
         self.train_dataset = RoadSatelliteSet(self.train_data, self.transforms_img, self.augmentations, self.randomAugmentations)
-
         self.valid_dataset = RoadSatelliteSet(self.valid_data, self.transforms_img, self.augmentations)
 
         self.test_data = list(zip(self.test_images, self.file_names))

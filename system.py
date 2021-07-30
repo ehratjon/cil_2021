@@ -14,30 +14,41 @@ import torchvision.transforms.functional as F
 from torchvision.utils import draw_segmentation_masks
 
 class SemanticSegmentationSystem(pl.LightningModule):
-    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, lr: float = 1e-3, batch_size: int = 8):        
+    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, model_fix_mask: nn.Module = None, lr: float = 1e-3, batch_size: int = 8):        
         super().__init__()
         self.model = model
         self.datamodule = datamodule
         
         self.model_fix = model_fix
+        self.model_fix_mask = model_fix_mask
         
         self.lr = lr
         self.batch_size = batch_size
         
         self.dice_loss = DiceLoss()
+
+        self.test_results = None
         
         self.upsample2x = nn.Upsample(scale_factor=2, mode='bilinear', align_corners=True)
         self.upsample608 = nn.Upsample(size=(608, 608), mode='bilinear', align_corners=True)
+        self.upsample48 = nn.Upsample(size=(48, 48), mode='bilinear', align_corners=True)
+        self.upsample38 = nn.Upsample(size=(38, 38), mode='bilinear', align_corners=True)
 
     def forward(self, X):
         y_pred = self.model(X.float())
         
         if self.model_fix:
-            y_pred_fix = self.model_fix(torch.sigmoid(y_pred))
+            y_pred = self.model_fix(torch.sigmoid(y_pred))        
 
-            return torch.sigmoid(y_pred_fix)
-        
-        return torch.sigmoid(y_pred)
+        if self.model_fix_mask:
+            y_pred_up = self.upsample608(torch.sigmoid(y_pred))
+
+            y_pred_patched = get_patches_batch(y_pred_up)
+            y_pred_patched_u = self.upsample48(y_pred_patched)
+            y_pred = self.model_fix_mask(y_pred_patched_u)
+            y_pred = self.upsample38(y_pred)
+
+        return y_pred
         
     def training_step(self, batch, batch_idx):
         X, y = batch
@@ -45,16 +56,13 @@ class SemanticSegmentationSystem(pl.LightningModule):
         X = X.float()
         y = y.float()
         
-        y_pred = self.model(X)
+        y_pred = self(X)
+
+        if self.model_fix_mask:
+            y_up = self.upsample608(y)
+            y = get_patches_batch(y_up)
        
         loss = self.dice_loss(y_pred, y) + nn.functional.binary_cross_entropy_with_logits(y_pred, y, reduction='mean')
-        
-        if self.model_fix:
-            y_pred_fix = self.model_fix(torch.sigmoid(y_pred))
-
-            loss_fix = self.dice_loss(y_pred_fix, y) + nn.functional.binary_cross_entropy_with_logits(y_pred_fix, y, reduction='mean')
-
-            loss = loss + loss_fix
         
         self.log('training_loss', loss)
         
@@ -64,15 +72,17 @@ class SemanticSegmentationSystem(pl.LightningModule):
         X, y = batch
                 
         X = X.float()
+        y = y.float()
+
+        if self.model_fix_mask:
+            y_up = self.upsample608(y)
+            y = get_patches_batch(y_up)
+
         y = y.int()
-        
-        y_pred = self.model(X)
+   
+        y_pred = self(X)
         y_sig = torch.sigmoid(y_pred)
-        
-        if self.model_fix:
-            y_pred_fix = self.model_fix(y_sig)
-            y_sig = torch.sigmoid(y_pred_fix)
-       
+    
         accuracy = tm.functional.accuracy(y_sig, y)
         f1 = tm.functional.f1(y_sig, y)
         
@@ -81,7 +91,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
         
         #show_image(y_sig[0]) 
         
-        return accuracy
+        return f1
     
     def test_step(self, batch, batch_idx):
         X, names = batch
@@ -95,24 +105,45 @@ class SemanticSegmentationSystem(pl.LightningModule):
     def test_epoch_end(self, outputs):
         self.test_results = [item for sublist in outputs for item in sublist]
         
-    def predict_test_batch(self, X):
+    def predict_test_batch(self, X, angles=[0, 90, 180, 270]):
         X = X.float()
-        y_preds = []
+        y_preds_final = []
         
         for x in X:
-            y_pred = self.predict_patches(x)
-                        
-            y_preds.append(y_pred)
-        
-        y_preds = torch.stack(y_preds)
+            y_preds = []
+            i = 0
+            for angle in angles:
+                x_rotated = self.rotate_patches(x, angle)
 
-        return y_preds
+                y_pred = self.predict_patches(x_rotated, angle=-angle)
+                                                
+                y_preds.append(y_pred)
+                
+            y_preds = torch.stack(y_preds)
+            
+            y_preds_final.append(y_preds.mean(0))
+        
+        y_preds_final = torch.stack(y_preds_final)
+
+        return y_preds_final
     
-    def predict_patches(self, patches, H=600, W=600):
-        y_pred_patches = self.upsample2x(self(patches))
+    def rotate_patches(self, patches, angle):
+        patches_rotated = []
+        
+        for patch in patches:
+            patch_rotated = F.rotate(patch, angle)
+            
+            patches_rotated.append(patch_rotated)
+            
+        return torch.stack(patches_rotated)
+    
+    def predict_patches(self, patches, H=600, W=600, angle=0):
+        y_preds_patches = torch.sigmoid(self(patches))
+        y_pred_patches = self.upsample2x(y_preds_patches)
+
+        y_pred_patches = self.rotate_patches(y_pred_patches, angle)
 
         y_pred = self.restore_image_mask(y_pred_patches, H, W, 70, 5, 5)
-
         y_pred = self.upsample608(y_pred)[0]
         
         return y_pred
@@ -121,11 +152,8 @@ class SemanticSegmentationSystem(pl.LightningModule):
     def visualize_results(self):
         Xs, ys = next(iter(self.val_dataloader()))
                 
-        y_preds = torch.sigmoid(self.model(Xs.float().cuda()))
-        
-        if self.model_fix:
-            y_preds = torch.sigmoid(self.model_fix(y_preds))
-        
+        y_preds = torch.sigmoid(self(Xs.float().cuda()))
+
         for y_pred in y_preds:
             show_image(y_pred)
            
@@ -133,10 +161,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
     def visualize_results_overlay(self, num_images=None):
         Xs, ys = next(iter(self.val_dataloader()))
                 
-        y_preds = torch.sigmoid(self.model(Xs.float().cuda()))
-        
-        if self.model_fix:
-            y_preds = torch.sigmoid(self.model_fix(y_preds))
+        y_preds = torch.sigmoid(self(Xs.float().cuda()))
         
         imgs_masks_zip = list(zip(Xs, ys))
         seg_imgs_masks = [draw_segmentation_masks(train_pair[0], train_pair[1].bool(), alpha=0.6, colors=['#FF0000']) for train_pair in imgs_masks_zip]
@@ -202,7 +227,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
         return {
             'optimizer': optimizer,
             'lr_scheduler': scheduler,
-            'monitor': 'validation_accuracy'
+            'monitor': 'validation_f1'
         }
 
 class DiceLoss(nn.Module):
@@ -250,3 +275,29 @@ def show_image(imgs):
         axs[0, i].set(xticklabels=[], yticklabels=[], xticks=[], yticks=[])
     
     plt.show()
+
+def get_patches_from_image(img, size=5, stride=5):
+    patches = img.unfold(1, size, stride).unfold(2, size, stride)
+    
+    return patches
+
+def get_patches_averages_rgb(img, is_mask=False, size=5, stride=5):
+    patches = get_patches_from_image(img, size, stride)
+    
+    patches_avg = patches.float().mean((3, 4))
+    
+    if is_mask:
+        patches_avg[patches_avg > 0.25] = 1.0
+        patches_avg[patches_avg <= 0.25] = 0.0
+        
+    return patches_avg
+
+def get_patches_batch(imgs):
+    imgs_patched = []
+    
+    for img in imgs:
+        img_patched = get_patches_averages_rgb(img, True, 16, 16)
+        
+        imgs_patched.append(img_patched)
+        
+    return torch.stack(imgs_patched)
