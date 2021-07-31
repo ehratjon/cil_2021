@@ -1,3 +1,8 @@
+"""
+In this file are the layers and blocks contained which are used by the models in model.py.  
+The main block types are convolutional, dilated and spatial.  
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

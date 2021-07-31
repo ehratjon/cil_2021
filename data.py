@@ -1,3 +1,8 @@
+"""
+This file contains code related to working with data. 
+This includes loading the data into the model, preprocessing and augmenting the data for better training and functions changing the image into patches and back to the whole image.
+"""
+
 import torch
 import torch.nn as nn
 from torch.utils.data import random_split

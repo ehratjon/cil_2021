@@ -1,3 +1,8 @@
+"""
+This file makes use of the pythorch-lightning package to handle the training, validation and testing of the models.  
+It also contains some helper functions to visualize the results and defines the Dice loss.
+"""
+
 import torch
 from torch import nn
 

@@ -1,3 +1,9 @@
+"""
+This file handles our machine learning models.
+There are three main architectural models: U-Net, U-Net++ and U-Net-3-Plus.  
+Each of them comes in four variants: unchaged, dilated, spatial and spatial-dilated, leaving us with a total of 12 models. 
+"""
+
 import torch
 from torch import nn
 

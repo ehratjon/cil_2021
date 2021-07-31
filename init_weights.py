@@ -1,3 +1,7 @@
+"""
+The following functions are for weight initialization of the U-Net-3-Plus.
+"""
+
 import torch
 import torch.nn as nn
 from torch.nn import init
