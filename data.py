@@ -138,16 +138,11 @@ class RoadSatelliteModule(pl.LightningDataModule):
         index_chosen = random.randint(0, img_patches.shape[0] - 1)
         img, mask = img_patches[index_chosen], mask_patches[index_chosen]
                 
-        #size=stride=2
-        #img = self.get_patches_averages_rgb(img, size=size, stride=stride)
-        #mask = self.get_patches_averages_rgb(mask, is_mask=True, size=size, stride=stride)
+        size=stride=2
+        img = self.get_patches_averages_rgb(img, size=size, stride=stride)
+        mask = self.get_patches_averages_rgb(mask, is_mask=True, size=size, stride=stride)
 
-        img = self.downsample(img)
-        mask = self.downsample(mask)
-        
-        mask[mask > 0] = 1.0
-        
-        return img.byte(), mask.byte()
+        return img, mask
 
     def test_augmentations(self, img, name): 
         img = torch.nn.Upsample(size=(600, 600), mode='bilinear', align_corners=True)(img[None, :, :, :].float())[0].byte()
@@ -155,14 +150,14 @@ class RoadSatelliteModule(pl.LightningDataModule):
         img_patches = self.split_image(img, kernel_size=320, stride=70)
         
         patches_avg = []
-        for patch in img_patches:
-            patch = self.downsample(patch)
+        for patch in img_patches:            
+            #patch = self.downsample(patch)
             
-            #size=stride=2
-            #patch = self.get_patches_averages_rgb(patch, size=size, stride=stride)
+            size=stride=2
+            patch = self.get_patches_averages_rgb(patch, size=size, stride=stride)
             #patch = self.merged_img_rag(patch, num_components=2000, compactness=10, thresh=0.03)
             
-            patches_avg.append(patch.byte())
+            patches_avg.append(patch)
 
         return torch.stack(patches_avg), name
 

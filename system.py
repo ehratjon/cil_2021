@@ -13,6 +13,9 @@ import torchvision
 import torchvision.transforms.functional as F
 from torchvision.utils import draw_segmentation_masks
 
+import scipy
+import skimage
+
 class SemanticSegmentationSystem(pl.LightningModule):
     def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, model_fix_mask: nn.Module = None, lr: float = 1e-3, batch_size: int = 8):        
         super().__init__()
@@ -34,16 +37,16 @@ class SemanticSegmentationSystem(pl.LightningModule):
         self.upsample48 = nn.Upsample(size=(48, 48), mode='bilinear', align_corners=True)
         self.upsample38 = nn.Upsample(size=(38, 38), mode='bilinear', align_corners=True)
 
-    def forward(self, X):
+    def forward(self, X, predict=False):
         y_pred = self.model(X.float())
         
         if self.model_fix:
             y_pred = self.model_fix(torch.sigmoid(y_pred))        
 
-        if self.model_fix_mask:
-            y_pred_up = self.upsample608(torch.sigmoid(y_pred))
+        if self.model_fix_mask and not predict:
+            y_pred = self.upsample608(torch.sigmoid(y_pred))
 
-            y_pred_patched = get_patches_batch(y_pred_up)
+            y_pred_patched = get_patches_batch(y_pred)
             y_pred_patched_u = self.upsample48(y_pred_patched)
             y_pred = self.model_fix_mask(y_pred_patched_u)
             y_pred = self.upsample38(y_pred)
@@ -108,23 +111,31 @@ class SemanticSegmentationSystem(pl.LightningModule):
     def predict_test_batch(self, X, angles=[0, 90, 180, 270]):
         X = X.float()
         y_preds_final = []
-        
+
         for x in X:
             y_preds = []
-            x=5
-            i = 0
+  
             for angle in angles:
                 x_rotated = self.rotate_patches(x, angle)
-
                 y_pred = self.predict_patches(x_rotated, angle=-angle)
-                                                
+                
+                y_pred = dilate_erode(y_pred)
+                
                 y_preds.append(y_pred)
                 
             # Majority voting
+            
+            y_preds = torch.stack(y_preds)
+            
+            if self.model_fix_mask:
+                y_preds = self.model_fix_mask(y_preds)
+            
             masks_batch = []
             for mask_pred in y_preds:
                 mask_pred_patched = mask_to_patched_mask(mask_pred.cpu())
-
+                                
+                mask_pred_patched = dilate_erode(mask_pred_patched)    
+                
                 masks_batch.append(mask_pred_patched)
 
             masks_batch = torch.stack(masks_batch)
@@ -153,11 +164,10 @@ class SemanticSegmentationSystem(pl.LightningModule):
         return torch.stack(patches_rotated)
     
     def predict_patches(self, patches, H=600, W=600, angle=0):
-        y_preds_patches = torch.sigmoid(self(patches))
+        y_preds_patches = torch.sigmoid(self(patches, True))
         y_pred_patches = self.upsample2x(y_preds_patches)
 
         y_pred_patches = self.rotate_patches(y_pred_patches, angle)
-
         y_pred = self.restore_image_mask(y_pred_patches, H, W, 70, 5, 5)
         y_pred = self.upsample608(y_pred)[0]
         
@@ -316,6 +326,8 @@ def get_patches_batch(imgs):
         imgs_patched.append(img_patched)
         
     return torch.stack(imgs_patched)
+
+
 foreground_threshold = 0.25 # percentage of pixels > 1 required to assign a foreground label to a patch
 
 # assign a label to a patch
@@ -336,3 +348,14 @@ def mask_to_patched_mask(image):
             label = patch_to_label(patch)
             patched_image[i:i + patch_size, j:j + patch_size] = label
     return patched_image
+
+def dilate_erode(X, steps=7):
+    v = X.clone().cpu()
+    
+    for i in range(steps):
+        v = skimage.morphology.dilation(v)
+        
+    for i in range(steps):
+        v = skimage.morphology.erosion(v)
+        
+    return torch.from_numpy(v)
