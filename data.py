@@ -67,8 +67,18 @@ class RoadSatelliteModule(pl.LightningDataModule):
         self.setup()
 
     def prepare_data(self):
-        self.train_images = self.read_images('CIL_street/data/maps1800/all/images/', ImageReadMode.RGB)    
-        self.train_masks = self.read_images('CIL_street/data/maps1800/all/groundtruth/', ImageReadMode.GRAY) 
+        # additional data can be downloaded from 
+        # https://github.com/matejsladek/CIL_street/tree/cluster_new/data/maps1800/all
+        # if done set additional_data = True
+        additional_data = False
+        self.train_images = []
+        self.train_masks = []
+        if additional_data: 
+            self.train_images = self.read_images('CIL_street/data/maps1800/all/images/', ImageReadMode.RGB)    
+            self.train_masks = self.read_images('CIL_street/data/maps1800/all/groundtruth/', ImageReadMode.GRAY) 
+        else: 
+            self.train_images = self.read_images('train/images/', ImageReadMode.RGB)    
+            self.train_masks = self.read_images('train/groundtruth/', ImageReadMode.GRAY) 
     
         for i, train_mask in enumerate(self.train_masks):
             self.train_masks[i][self.train_masks[i] > 0] = 1

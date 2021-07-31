@@ -181,8 +181,18 @@ class SemanticSegmentationSystem(pl.LightningModule):
     @torch.no_grad()
     def visualize_results(self):
         Xs, ys = next(iter(self.val_dataloader()))
+        
+        if torch.cuda.is_available():
+            gpu_count = -1
+            gpu_auto_select = True
+        else:
+            gpu_count = 0
+            gpu_auto_select = False
                 
-        y_preds = torch.sigmoid(self(Xs.float().cuda()))
+        if gpu_auto_select:
+            y_preds = torch.sigmoid(self(Xs.float().cuda()))
+        else:
+            y_preds = torch.sigmoid(self(Xs.float()))
 
         for y_pred in y_preds:
             show_image(y_pred)
@@ -191,7 +201,17 @@ class SemanticSegmentationSystem(pl.LightningModule):
     def visualize_results_overlay(self, num_images=None):
         Xs, ys = next(iter(self.val_dataloader()))
                 
-        y_preds = torch.sigmoid(self(Xs.float().cuda()))
+        if torch.cuda.is_available():
+            gpu_count = -1
+            gpu_auto_select = True
+        else:
+            gpu_count = 0
+            gpu_auto_select = False
+                
+        if gpu_auto_select:
+            y_preds = torch.sigmoid(self(Xs.float().cuda()))
+        else:
+            y_preds = torch.sigmoid(self(Xs.float()))
         
         imgs_masks_zip = list(zip(Xs, ys))
         seg_imgs_masks = [draw_segmentation_masks(train_pair[0], train_pair[1].bool(), alpha=0.6, colors=['#FF0000']) for train_pair in imgs_masks_zip]
@@ -231,7 +251,13 @@ class SemanticSegmentationSystem(pl.LightningModule):
         
         restored_output = self.restore_image(patches, H, W, stride)
         
-        ones = torch.ones((B, C, H, W), device='cuda')
+        if torch.cuda.is_available():
+            gpu_count = -1
+            device = 'cuda'
+        else:
+            gpu_count = 0
+            device = 'cpu'
+        ones = torch.ones((B, C, H, W), device=device)
         
         patches_ones = self.split_image(ones, kernel_size, stride).float()
         
