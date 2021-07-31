@@ -11,12 +11,15 @@ To run the code a running version of Python 3 is needed. The version we used is 
 Additionally you will need some Python packages. These can be installed via Pip, the package installer for Python.  
 The needed packages are found in the 'requirements.txt' file and can easily be installed with the command ```pip install -r requirements.txt```  
 
+To have all the training data we used you can download additional data from the github repository https://github.com/ehratjon/cil_2021/tree/master. 
+
+To get access to our trained models, download them from the polybox https://polybox.ethz.ch/index.php/s/rDB7FL4XGeSpEp7 and add them to lightning_logs/<model_name>, where <model_name> is the name of the checkpoint (e.g. UNetSpatialDilated_data)
 
 ### Running the Code
 To run the code there are various ways.
 
 #### Reproducing the results in the report
-Reproducing the model trained for the report simply run ```python cillers_best.py```
+Reproducing the model trained for the report simply run ```python Nested_Checkpoint.py``` to load the best model or run ```python cillers_best_training.py``` to train the model from scratch.
 
 #### Interactive
 To interactively play with the provided models there is an interactive jupyter notebook.
