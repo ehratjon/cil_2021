@@ -34,5 +34,5 @@ models_fix = [
 ]
 
 for model in models:    
-    os.system(f'bsub -n 8 -W 12:00 -R "rusage[mem=4096, ngpus_excl_p=1]" -R "select[gpu_mtotal0>=10000]" -o {model + ".log"} "python {model}.py"')
+    os.system(f'bsub -n 8 -W 12:00 -R "rusage[mem=4096, ngpus_excl_p=1]" -R "select[gpu_mtotal0>=10000]" -o {model + ".log"} "python training_scripts/{model}.py"')
     time.sleep(1)

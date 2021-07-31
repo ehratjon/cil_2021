@@ -7,7 +7,7 @@ The code was written by the group 'Cillers' consisting of Mike Boss, Jonas Passw
 
 
 ### Setup  
-To run the code a running version of Python 3 is needed. The version we used is Python 3.9.4. Information about how to get Python on your system should be readily available on the internet.  
+To run the code a running version of Python 3 is needed. The version we used is Python 3.7.4. Information about how to get Python on your system should be readily available on the internet.  
 Additionally you will need some Python packages. These can be installed via Pip, the package installer for Python.  
 The needed packages are found in the 'requirements.txt' file and can easily be installed with the command ```pip install -r requirements.txt```  
 

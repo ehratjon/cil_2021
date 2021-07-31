@@ -1,0 +1,8 @@
+jupyter
+pytorch-lightning
+torchvision
+scikit-image
+fast-slic
+opencv-python
+torchinfo
+regex

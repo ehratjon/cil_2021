@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
 
-
-get_ipython().run_line_magic('load_ext', 'autoreload')
-get_ipython().run_line_magic('autoreload', '2')
 
 
 # In[5]:
@@ -69,14 +65,6 @@ road_data = RoadSatelliteModule(num_workers=num_workers, batch_size=batch_size)
 # In[10]:
 
 
-get_ipython().run_cell_magic('time', '', 'X, y = next(iter(road_data.train_dataloader()))')
-
-
-# In[11]:
-
-
-imgs, masks = next(iter(road_data.test_dataloader()))
-
 
 # ## 1.2 Inspect Data
 
@@ -97,14 +85,12 @@ def show_image(imgs):
 # In[13]:
 
 
-show_image(X[0])
-show_image(y[0])
+
 
 
 # In[14]:
 
 
-show_image(imgs[0][0])
 
 
 # # 2. Define Model / System
@@ -125,7 +111,7 @@ model_name = str(model).partition('(')[0]
 # In[17]:
 
 
-system = SemanticSegmentationSystem(model, road_data)
+system = SemanticSegmentationSystem(model, road_data, n_closing=0)
 
 
 # In[18]:
@@ -201,8 +187,6 @@ else:
 # In[23]:
 
 
-get_ipython().run_cell_magic('time', '', 'if not load_from_checkpoint:\n    trainer.fit(system)')
-
 
 # In[27]:
 
@@ -235,17 +219,6 @@ else:
         print("model fix mask not defined")
 
 
-# In[28]:
-
-
-system.visualize_results()
-
-
-# In[29]:
-
-
-system.visualize_results_overlay()
-
 
 # # 5. Predict
 
@@ -264,13 +237,6 @@ if load_from_checkpoint:
 
 else:
     trainer.test(system)
-
-
-# In[32]:
-
-
-for t in system.test_results:
-    show_image(t[0])
 
 
 # In[33]:
