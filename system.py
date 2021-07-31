@@ -22,7 +22,7 @@ import scipy
 import skimage
 
 class SemanticSegmentationSystem(pl.LightningModule):
-    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, model_fix_mask: nn.Module = None, n_closing = 9, lr: float = 1e-3, batch_size: int = 8):        
+    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, model_fix_mask: nn.Module = None, n_closing = 7, lr: float = 1e-3, batch_size: int = 8):        
         super().__init__()
         self.model = model
         self.datamodule = datamodule
