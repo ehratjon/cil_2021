@@ -187,7 +187,8 @@ else:
 # In[23]:
 
 
-
+if not load_from_checkpoint:
+    trainer.fit(system)
 # In[27]:
 
 
