@@ -67,10 +67,15 @@ class RoadSatelliteModule(pl.LightningDataModule):
         self.setup()
 
     def prepare_data(self):
-        # additional data can be downloaded from 
+        # additional data can be downloaded from our repo
+        # https://github.com/ehratjon/cil_2021
+        # or from whre we got the data: 
         # https://github.com/matejsladek/CIL_street/tree/cluster_new/data/maps1800/all
-        # if done set additional_data = True
-        additional_data = False
+
+        # if no additional data has been downloaded 
+        # set additional_data = False
+        
+        additional_data = True
         self.train_images = []
         self.train_masks = []
         if additional_data: 
