@@ -33,6 +33,7 @@ from layers import ResSDNLayer
 
 from init_weights import init_weights
 
+# U-Net-3-Plus part from https://github.com/ZJUGiveLab/UNet-Version/blob/master/models/UNet_3Plus.py
 
 class UNet_3Plus_Spatial_Dilated(nn.Module):
 
@@ -861,6 +862,8 @@ class UNet_3Plus(nn.Module):
         d1 = self.outconv1(hd1)  # d1->320*320*n_classes
         
         return d1
+    
+# Nested U-Net and U-Net part from: https://github.com/4uiiurz1/pytorch-nested-unet/blob/master/archs.py
     
 class NestedUNetSpatialDilated(nn.Module):
     def __init__(self, num_classes, input_channels=3, deep_supervision=False, nb_filter=[16, 32, 64, 128, 256, 512], **kwargs):

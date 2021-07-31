@@ -10,6 +10,8 @@ from init_weights import init_weights
 from torch.nn import GRUCell
 
 # UNet3+
+# form https://github.com/ZJUGiveLab/UNet-Version/blob/8ecd06740d18cf508e5c8b2cc2bf38a026aa0e9b/models/layers.py
+
 class unetConv2Spatial(nn.Module):
     def __init__(self, in_size, out_size, is_batchnorm, n=2, ks=3, stride=1, padding=1, upsample=False):
         super(unetConv2Spatial, self).__init__()
@@ -402,7 +404,7 @@ class dilated_block(nn.Module):
         z = torch.cat([x, z1, z2, z3, z4], 1)
 
         return z
-
+# from https://github.com/4uiiurz1/pytorch-nested-unet/blob/master/archs.py
 class VGGSpatialBlock(nn.Module):
     def __init__(self, in_channels, middle_channels, out_channels, upsample=False):
         super().__init__()
@@ -484,6 +486,8 @@ class conv_block(nn.Module):
         return x
     
 # SDN
+# from https://github.com/djordjemila/sdn/blob/main/lib/nn.py
+
 class SDNCell(nn.Module):
     def __init__(self, num_features):
         super().__init__()

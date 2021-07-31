@@ -211,6 +211,13 @@ class RoadSatelliteModule(pl.LightningDataModule):
             patches_avg[patches_avg > 0.25] = 1.0
             
         return patches_avg.byte()
+    
+    """
+    Code from scikit image tutorials
+    https://scikit-image.org/docs/dev/auto_examples/segmentation/plot_boundary_merge.html
+    https://scikit-image.org/docs/dev/auto_examples/segmentation/plot_rag_merge.html
+    https://scikit-image.org/docs/dev/api/skimage.future.graph.html under examples
+    """
         
     def weight_boundary(self, graph, src, dst, n):
         """
