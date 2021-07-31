@@ -22,13 +22,15 @@ import scipy
 import skimage
 
 class SemanticSegmentationSystem(pl.LightningModule):
-    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, model_fix_mask: nn.Module = None, lr: float = 1e-3, batch_size: int = 8):        
+    def __init__(self, model: nn.Module, datamodule: pl.LightningDataModule, model_fix: nn.Module = None, model_fix_mask: nn.Module = None, n_closing = 9, lr: float = 1e-3, batch_size: int = 8):        
         super().__init__()
         self.model = model
         self.datamodule = datamodule
         
         self.model_fix = model_fix
         self.model_fix_mask = model_fix_mask
+        
+        self.n_closing = n_closing
         
         self.lr = lr
         self.batch_size = batch_size
@@ -124,7 +126,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
                 x_rotated = self.rotate_patches(x, angle)
                 y_pred = self.predict_patches(x_rotated, angle=-angle)
                 
-                y_pred = dilate_erode(y_pred)
+                y_pred = dilate_erode(y_pred, steps=self.n_closing)
                 
                 y_preds.append(y_pred)
                 
@@ -139,7 +141,7 @@ class SemanticSegmentationSystem(pl.LightningModule):
             for mask_pred in y_preds:
                 mask_pred_patched = mask_to_patched_mask(mask_pred.cpu())
                                 
-                mask_pred_patched = dilate_erode(mask_pred_patched)    
+                mask_pred_patched = dilate_erode(mask_pred_patched, steps=self.n_closing)    
                 
                 masks_batch.append(mask_pred_patched)
 
@@ -382,7 +384,7 @@ def mask_to_patched_mask(image):
     return patched_image
 
 def dilate_erode(X, steps=7):
-    v = X.clone().cpu()
+    v = X.clone().cpu().numpy()
     
     for i in range(steps):
         v = skimage.morphology.dilation(v)
